@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans    
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd    
+                        http://www.springframework.org/schema/context    
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd    
+                        http://www.springframework.org/schema/tx 
+                     	http://www.springframework.org/schema/tx/spring-tx.xsd ">
+
+	<!-- 使用Annotation自动注册Bean，解决事务失效问题：在主容器中不扫描@Controller注解，在SpringMVC中只扫描@Controller注解。 -->
+	<context:component-scan base-package="com.dph">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- 引入配置文件 -->
+	<!-- database test -->
+	<context:property-placeholder location="classpath:jdbc_test.properties"
+		ignore-unresolvable="true" />
+	<!-- database test_2 -->
+	<context:property-placeholder location="classpath:jdbc_test_2.properties"
+		ignore-unresolvable="true" />
+
+	<!-- Atomikos表示必须要用到XA数据库驱动类,可设置连接池 -->
+	<bean id="dataSource_test" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+		init-method="init" destroy-method="close" lazy-init="false">
+		<property name="uniqueResourceName" value="dataSource_test" />
+		<property name="xaDataSourceClassName" value="${test.driver}" />
+		<property name="xaProperties">
+			<props>
+				<prop key="URL">${test.url}</prop>
+				<prop key="user">${test.username}</prop>
+				<prop key="password">${test.password}</prop>
+			</props>
+		</property>
+		<property name="poolSize" value="${test.poolSize}" />
+		<property name="minPoolSize" value="${test.minPoolSize}" />
+		<property name="maxPoolSize" value="${test.maxPoolSize}" />
+		<property name="maxIdleTime" value="${test.maxIdleTime}" />
+		<property name="borrowConnectionTimeout" value="${test.borrowConnectionTimeout}" />
+		<property name="maintenanceInterval" value="${test.maintenanceInterval}" />
+		<property name="testQuery" value="${test.testQuery}" />  <!--解决偶尔失去连接的bug -->
+	</bean>
+
+	<bean id="dataSource_test_2" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+		init-method="init" destroy-method="close" lazy-init="true">
+		<property name="uniqueResourceName" value="dataSource_test_2" />
+		<property name="xaDataSourceClassName" value="${test_2.driver}" />
+		<property name="xaProperties">
+			<props>
+				<prop key="URL">${test_2.url}</prop>
+				<prop key="user">${test_2.username}</prop>
+				<prop key="password">${test_2.password}</prop>
+			</props>
+		</property>
+		<property name="poolSize" value="${test_2.poolSize}" />
+		<property name="minPoolSize" value="${test_2.minPoolSize}" />
+		<property name="maxPoolSize" value="${test_2.maxPoolSize}" />
+		<property name="maxIdleTime" value="${test_2.maxIdleTime}" />
+		<property name="borrowConnectionTimeout" value="${test_2.borrowConnectionTimeout}" />
+		<property name="maintenanceInterval" value="${test_2.maintenanceInterval}" />
+		<property name="testQuery" value="${test_2.testQuery}" />  <!--解决偶尔失去连接的bug -->
+	</bean>
+
+	<!-- Atomikos事务方法 -->
+	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
+		init-method="init" destroy-method="close">
+		<property name="forceShutdown" value="true" />
+	</bean>
+	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+		<property name="transactionTimeout" value="240" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager">
+		<property name="transactionManager" ref="atomikosTransactionManager" />
+		<property name="userTransaction" ref="atomikosUserTransaction" />
+	</bean>
+
+	<!-- 扫描注解@Transactional -->
+	<tx:annotation-driven transaction-manager="transactionManager"
+		proxy-target-class="true" />
+
+	<!-- 使用mybatis -->
+	<bean id="sqlSessionFactory_test" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource_test" />
+		<property name="mapperLocations" value="classpath:mappers/**/*.xml" />
+		<property name="configLocation" value="classpath:mybatis.xml" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory_test" />
+		<property name="basePackage" value="com.dph" />
+		<property name="annotationClass" value="com.dph.annotation.MybatisDao" />
+	</bean>
+
+	<!-- 使用mybatis -->
+	<bean id="sqlSessionFactory_test_2" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource_test_2" />
+		<property name="mapperLocations" value="classpath:mappers_test_2/**/*.xml" />
+		<property name="configLocation" value="classpath:mybatis.xml" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory_test_2" />
+		<property name="basePackage" value="com.dph" />
+		<property name="annotationClass" value="com.dph.annotation.MybatisDaoTest2" />
+	</bean>
+</beans>
