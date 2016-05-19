@@ -1,4 +1,4 @@
-分布式事务管理
+#JTA分布式事务管理demo
 1.两数据库分别有两个表：
 test：user
 test_2： student
