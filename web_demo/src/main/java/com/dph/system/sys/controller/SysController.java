@@ -38,6 +38,13 @@ public class SysController extends BaseController {
 		}
 		return destPage;
 	}
+	
+	@RequestMapping("casLoginFail")
+	public String loginFail() {
+		String destPage = "system/sys/casLoginFail";
+		
+		return destPage;
+	}
 
 	@RequestMapping("unauthorized")
 	public String unauthorized(HttpServletRequest request, HttpServletResponse response) {
