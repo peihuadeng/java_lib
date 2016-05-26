@@ -3,6 +3,16 @@
 <html>
 <head>
     <title>用户登录</title>
+	<script type="text/javascript">
+	function changeValImage() {
+		$("#valImage").attr("src", "sys/valImage?" + new Date().getTime());
+	}
+	
+	$(document).ready(function() {
+		$("#valImage").click(changeValImage);
+		$("#valImageLink").click(changeValImage);
+	});
+	</script>
 </head>
 <body>
 <div class="center-block" style="padding-top: 200px;width: 400px;">
@@ -29,6 +39,19 @@
 					maxlength="50" required/>
 			</div>
 		</div>
+		
+		<c:if test="${not empty sessionScope.validation_code_enabled }">
+		<div class="form-group">
+			<label for="password" class="col-sm-4 control-label">验证码:</label>
+			<div class="col-sm-4">
+				<input type="text" id="validation_code" name="validation_code" class="form-control" placeholder="请输入验证码"
+					maxlength="4" required/>
+			</div>
+			<div class="col-sm-4 control-label" style="text-align: left;">
+				<img id="valImage" title="点击换一张" src="sys/valImage"><a id="valImageLink" href="javascript:;">换一张</a>
+			</div>
+		</div>
+		</c:if>
 		
 		<div class="form-group">
 			<div class="col-sm-offset-4 col-sm-8">

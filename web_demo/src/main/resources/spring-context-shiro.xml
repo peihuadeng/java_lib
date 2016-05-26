@@ -107,13 +107,19 @@
 
 	<!-- 基于Form表单的身份验证过滤器 -->
 	<bean id="formAuthenticationFilter"
-		class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter">
+		class="com.dph.system.shiro.filter.WebFormAuthenticationFIlter">
 		<property name="usernameParam" value="username" />
 		<property name="passwordParam" value="password" />
 		<property name="failureKeyAttribute" value="shiroLoginFailure" />
 		<property name="rememberMeParam" value="rememberMe" />
 		<property name="loginUrl" value="/sys/login" />
 		<property name="successUrl" value="/" />
+	</bean>
+	
+	<!-- 验证码过滤器 -->
+	<bean id="validationCodeFilter" class="com.dph.system.shiro.filter.ValidationCodeFilter">
+		<property name="failureKeyAttribute" value="shiroLoginFailure" />
+		<property name="validationCodeParam" value="validation_code" />
 	</bean>
 	
 	<!-- ssl过滤器 -->
@@ -129,6 +135,7 @@
 		<property name="filters">
 			<util:map>
 				<entry key="authc" value-ref="formAuthenticationFilter" />
+				<entry key="valCode" value-ref="validationCodeFilter" />
 				<entry key="ssl" value-ref="sslFilter" />
 			</util:map>
 		</property>
@@ -143,9 +150,11 @@
 				/index.jsp = anon
 				<!-- 无权限提示页：匿名访问 -->
 				/sys/unauthorized = anon
+				<!-- 验证码：匿名访问 -->
+				/sys/valImage = anon
 				<!-- 登录界面：使用formAuthenticationFilter（form登录）及sslFilter（https访问）拦截 -->
 				<!-- /sys/login = ssl,authc -->
-				/sys/login = authc
+				/sys/login = valCode,authc
 				<!-- 退出url：使用logoutFilter拦截 -->
 				/logout = logout
 				<!-- 统计界面：需要登录 -->
