@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.dph.common.persistence.Page;
+import com.dph.common.entity.Page;
 import com.dph.common.web.BaseController;
 import com.dph.system.user.entity.User;
 import com.dph.system.user.service.UserService;

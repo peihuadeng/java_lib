@@ -1,6 +1,6 @@
 package com.dph.system.permission.entity;
 
-import com.dph.common.persistence.BaseEntity;
+import com.dph.common.entity.BaseEntity;
 
 public class Permission extends BaseEntity<Permission> {
 

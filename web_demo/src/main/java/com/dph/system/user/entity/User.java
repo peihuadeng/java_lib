@@ -1,6 +1,6 @@
 package com.dph.system.user.entity;
 
-import com.dph.common.persistence.BaseEntity;
+import com.dph.common.entity.BaseEntity;
 
 public class User extends BaseEntity<User> {
 

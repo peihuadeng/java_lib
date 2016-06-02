@@ -1,4 +1,4 @@
-package com.dph.common.persistence;
+package com.dph.common.entity;
 
 import java.util.List;
 

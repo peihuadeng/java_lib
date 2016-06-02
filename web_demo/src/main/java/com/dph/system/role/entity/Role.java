@@ -1,6 +1,6 @@
 package com.dph.system.role.entity;
 
-import com.dph.common.persistence.BaseEntity;
+import com.dph.common.entity.BaseEntity;
 
 public class Role extends BaseEntity<Role> {
 

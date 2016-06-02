@@ -9,7 +9,7 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<jdk.version>1.7</jdk.version>
+		<jdk.version>1.8</jdk.version>
 		<jee.version>7.0</jee.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.11</junit.version>
@@ -31,6 +31,8 @@
 		<commons-codec.version>1.9</commons-codec.version>
 		<commons-fileupload.version>1.3.1</commons-fileupload.version>
 		<commons-beanutils.version>1.9.1</commons-beanutils.version>
+		<!-- ehcache版本号 -->
+		<ehcache.version>2.0.4</ehcache.version>
 		<!-- sitemesh版本号 -->
 		<sitemesh.version>2.4.2</sitemesh.version>
 		<!-- shiro版本号 -->
@@ -269,7 +271,7 @@
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-web</artifactId>
-			<version>2.0.4</version>
+			<version>${ehcache.version}</version>
 		</dependency>
 
 		<!-- sitemesh -->

@@ -5,16 +5,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dph.common.persistence.BaseEntity;
-import com.dph.common.persistence.BaseMapper;
-import com.dph.common.persistence.Page;
+import com.dph.common.entity.BaseEntity;
+import com.dph.common.entity.Page;
+import com.dph.common.persistence.BaseDao;
 import com.dph.common.utils.StringUtils;
 
 @Transactional(readOnly = true)
-public abstract class BaseService<T extends BaseEntity<T>, M extends BaseMapper<T>> {
+public abstract class BaseService<T extends BaseEntity<T>, Dao extends BaseDao<T>> {
 
 	@Autowired
-	protected M mapper;
+	protected Dao dao;
 
 	/**
 	 * 保存对象
@@ -30,9 +30,9 @@ public abstract class BaseService<T extends BaseEntity<T>, M extends BaseMapper<
 
 		if (StringUtils.isBlank(t.getId())) {
 			t.preInsert();
-			return mapper.insert(t);
+			return dao.insert(t);
 		} else {
-			return mapper.updateByPrimaryKey(t);
+			return dao.updateByPrimaryKey(t);
 		}
 	}
 
@@ -47,7 +47,7 @@ public abstract class BaseService<T extends BaseEntity<T>, M extends BaseMapper<
 			return 0;
 		}
 
-		return mapper.deleteByPrimaryKey(id);
+		return dao.deleteByPrimaryKey(id);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public abstract class BaseService<T extends BaseEntity<T>, M extends BaseMapper<
 			return null;
 		}
 
-		return mapper.selectByPrimaryKey(id);
+		return dao.selectByPrimaryKey(id);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public abstract class BaseService<T extends BaseEntity<T>, M extends BaseMapper<
 	 * @return
 	 */
 	public List<T> getList(T t) {
-		return mapper.select(t);
+		return dao.select(t);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public abstract class BaseService<T extends BaseEntity<T>, M extends BaseMapper<
 			t.setPage(page);
 		}
 
-		List<T> list = mapper.select(t);
+		List<T> list = dao.select(t);
 		Page<T> page = t.getPage();
 		page.setResults(list);
 

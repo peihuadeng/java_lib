@@ -27,8 +27,8 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.apache.log4j.Logger;
 
-import com.dph.common.persistence.BaseEntity;
-import com.dph.common.persistence.Page;
+import com.dph.common.entity.BaseEntity;
+import com.dph.common.entity.Page;
 
 /**
  * 

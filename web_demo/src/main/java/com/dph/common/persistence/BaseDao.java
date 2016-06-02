@@ -2,7 +2,7 @@ package com.dph.common.persistence;
 
 import java.util.List;
 
-public interface BaseMapper<T> {
+public interface BaseDao<T> {
 
 	int insert(T t);
 

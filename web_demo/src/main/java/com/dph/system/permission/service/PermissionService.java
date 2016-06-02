@@ -16,6 +16,6 @@ public class PermissionService extends BaseService<Permission, PermissionMapper>
 	//更新权限与角色关联,需要调用userRealm.clearCachedAuthorizationInfo(PrincipalCollection principals)清除身份验证信息缓存
 
 	public List<Permission> findPermissionsByRole(Role role) {
-		return mapper.findPermissionsByRole(role);
+		return dao.findPermissionsByRole(role);
 	}
 }

@@ -16,6 +16,6 @@ public class RoleService extends BaseService<Role, RoleMapper> {
 	//更新角色与用户关联,需要调用userRealm.clearCachedAuthorizationInfo(PrincipalCollection principals)清除身份验证信息缓存
 
 	public List<Role> findRolesByUser(User user) {
-		return mapper.findRolesByUser(user);
+		return dao.findRolesByUser(user);
 	}
 }
