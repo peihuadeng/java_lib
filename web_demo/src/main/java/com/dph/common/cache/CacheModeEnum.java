@@ -1,5 +1,5 @@
 package com.dph.common.cache;
 
-public enum CacheModelEnum {
+public enum CacheModeEnum {
 	None, Local, Remote
 }

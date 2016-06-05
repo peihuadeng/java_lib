@@ -16,6 +16,10 @@ public interface BaseDao<T> {
 
 	T selectByPrimaryKey(String id);
 
+	T selectSimpleByPrimaryKey(String id);
+
 	public List<T> select(T t);
+
+	public List<T> selectSimple(T t);
 
 }

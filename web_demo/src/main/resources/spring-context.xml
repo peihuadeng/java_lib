@@ -19,9 +19,6 @@
 	<!-- 数据库配置参数文件 -->
 	<context:property-placeholder location="classpath:jdbc.properties"
 		ignore-unresolvable="true" />
-	<!-- shiro配置参数文件 -->
-	<context:property-placeholder location="classpath:shiro.properties"
-		ignore-unresolvable="true" />
 
 	<!-- 数据库连接池 -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"

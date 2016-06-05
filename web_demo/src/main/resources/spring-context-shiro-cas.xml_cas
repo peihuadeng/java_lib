@@ -12,6 +12,9 @@
 						http://www.springframework.org/schema/util
 						http://www.springframework.org/schema/util/spring-util.xsd">
 						
+	<!-- shiro配置参数文件 -->
+	<context:property-placeholder location="classpath:shiro.properties"
+		ignore-unresolvable="true" />
 	<!-- 引入单点登录配置文件 -->
 	<context:property-placeholder location="classpath:cas.properties"
 		ignore-unresolvable="true" />

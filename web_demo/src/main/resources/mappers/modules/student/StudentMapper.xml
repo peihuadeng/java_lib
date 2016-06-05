@@ -1,38 +1,86 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.dph.modules.student.dao.StudentMapper" >
-  <resultMap id="BaseResultMap" type="com.dph.modules.student.entity.Student" >
-    <id column="id" property="id" jdbcType="VARCHAR" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="age" property="age" jdbcType="INTEGER" />
-    <result column="teacher_id" property="teacherId" jdbcType="VARCHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-    id, name, age, teacher_id
+
+  <sql id="columns" >
+    student.id as "id",
+	student.name as "name",
+	student.age as "age",
+	student.teacher_id as "teacher_id"
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  
+  <sql id="teacher_columns" >
+  	,
+    fk_teacher.id as "teacher.id",
+    fk_teacher.name as "teacher.name",
+    fk_teacher.age as "teacher.age"
+  </sql>
+  
+  <sql id="all_columns">
+  	<include refid="columns" />
+  	<include refid="teacher_columns" />
+  </sql>
+  
+  <sql id="join_teacher">
+  	left join teacher fk_teacher on teacher_id = fk_teacher.id
+  </sql>
+  
+  <sql id="join_all">
+  	<include refid="join_teacher" />
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultType="com.dph.modules.student.entity.Student">
     select 
-    <include refid="Base_Column_List" />
+    <include refid="all_columns" />
+    from student
+    <include refid="join_all" />
+    where student.id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectSimpleByPrimaryKey" resultType="com.dph.modules.student.entity.Student">
+    select 
+    <include refid="columns" />
     from student
     where id = #{id,jdbcType=VARCHAR}
   </select>
   
-  <select id="select" resultMap="BaseResultMap" parameterType="com.dph.modules.student.entity.Student" >
+  <select id="select" resultType="com.dph.modules.student.entity.Student">
     select 
-    <include refid="Base_Column_List" />
+    <include refid="all_columns" />
+    from student
+    <include refid="join_all" />
+    <where>
+    	<if test="id != null and id != ''">
+    		 id = #{id,jdbcType=VARCHAR}
+    	</if>
+    	<if test="name != null and name != ''">
+    		and name like concat(#{name}, '%')
+    	</if>
+    	<if test="age != null">
+    		and age = #{age}
+    	</if>
+    	<if test="teacherId != null and teacherId != ''">
+    		and teacherId = #{teacherId}
+    	</if>
+    </where>
+  </select>
+  
+  <select id="selectSimple" resultType="com.dph.modules.student.entity.Student" parameterType="com.dph.modules.student.entity.Student" >
+    select 
+    <include refid="columns" />
     from student
     <where>
     	<if test="id != null and id != ''">
     		 id = #{id,jdbcType=VARCHAR}
     	</if>
     	<if test="name != null and name != ''">
-    		name like concat(#{name}, '%')
+    		and name like concat(#{name}, '%')
     	</if>
     	<if test="age != null">
-    		age = #{age}
+    		and age = #{age}
     	</if>
     	<if test="teacherId != null and teacherId != ''">
-    		teacherId = #{teacherId}
+    		and teacherId = #{teacherId}
     	</if>
     </where>
   </select>
@@ -41,12 +89,14 @@
     delete from student
     where id = #{id,jdbcType=VARCHAR}
   </delete>
+  
   <insert id="insert" parameterType="com.dph.modules.student.entity.Student" >
     insert into student (id, name, age, 
       teacher_id)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, 
       #{teacherId,jdbcType=VARCHAR})
   </insert>
+  
   <insert id="insertSelective" parameterType="com.dph.modules.student.entity.Student" >
     insert into student
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -78,6 +128,7 @@
       </if>
     </trim>
   </insert>
+  
   <update id="updateByPrimaryKeySelective" parameterType="com.dph.modules.student.entity.Student" >
     update student
     <set >
@@ -93,6 +144,7 @@
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  
   <update id="updateByPrimaryKey" parameterType="com.dph.modules.student.entity.Student" >
     update student
     set name = #{name,jdbcType=VARCHAR},

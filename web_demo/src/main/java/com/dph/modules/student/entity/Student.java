@@ -1,9 +1,12 @@
 package com.dph.modules.student.entity;
 
+import com.dph.common.cache.annotation.LinkTo;
 import com.dph.common.entity.BaseEntity;
+import com.dph.modules.teacher.dao.TeacherLocalCacheDao;
+import com.dph.modules.teacher.entity.Teacher;
 
 public class Student extends BaseEntity<Student> {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private String name;
@@ -11,6 +14,9 @@ public class Student extends BaseEntity<Student> {
 	private Integer age;
 
 	private String teacherId;
+
+	@LinkTo(field = "teacherId", dao = TeacherLocalCacheDao.class)
+	private transient Teacher teacher;
 
 	public String getName() {
 		return name;
@@ -34,5 +40,13 @@ public class Student extends BaseEntity<Student> {
 
 	public void setTeacherId(String teacherId) {
 		this.teacherId = teacherId == null ? null : teacherId.trim();
+	}
+
+	public Teacher getTeacher() {
+		return teacher;
+	}
+
+	public void setTeacher(Teacher teacher) {
+		this.teacher = teacher;
 	}
 }

@@ -11,6 +11,10 @@
 						http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://www.springframework.org/schema/util
 						http://www.springframework.org/schema/util/spring-util.xsd">
+	<!-- shiro配置参数文件 -->
+	<context:property-placeholder location="classpath:shiro.properties"
+		ignore-unresolvable="true" />
+		
 	<!-- 使用ehcache -->
 	<bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
 		<property name="cacheManager" ref="cacheManager" />

@@ -1,4 +1,4 @@
-package com.dph.modules.student.dao;
+package com.dph.modules.teacher.dao;
 
 import java.util.List;
 
@@ -8,39 +8,39 @@ import org.springframework.stereotype.Component;
 
 import com.dph.common.cache.CacheModeEnum;
 import com.dph.common.persistence.BaseDao;
-import com.dph.modules.student.entity.Student;
+import com.dph.modules.teacher.entity.Teacher;
 
 @Component
-public class StudentDao implements BaseDao<Student> {
+public class TeacherDao implements BaseDao<Teacher> {
 	
 	@Value("${cache.mode:Local}")
 	private CacheModeEnum cacheModel;
 	
 	@Autowired
-	private StudentMapper studentMapper;
+	private TeacherMapper teacherMapper;
 	
 	@Autowired
-	private StudentLocalCacheDao studentLocalCacheDao;
+	private TeacherLocalCacheDao teacherLocalCacheDao;
 
 	@Override
-	public int insert(Student student) {
+	public int insert(Teacher teacher) {
 		switch(cacheModel) {
 		case None:
-			return studentMapper.insert(student);
+			return teacherMapper.insert(teacher);
 		case Local:
-			return studentLocalCacheDao.insert(student);
+			return teacherLocalCacheDao.insert(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
 	}
 
 	@Override
-	public int insertSelective(Student student) {
+	public int insertSelective(Teacher teacher) {
 		switch(cacheModel) {
 		case None:
-			return studentMapper.insertSelective(student);
+			return teacherMapper.insertSelective(teacher);
 		case Local:
-			return studentLocalCacheDao.insertSelective(student);
+			return teacherLocalCacheDao.insertSelective(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -50,84 +50,83 @@ public class StudentDao implements BaseDao<Student> {
 	public int deleteByPrimaryKey(String id) {
 		switch(cacheModel) {
 		case None:
-			return studentMapper.deleteByPrimaryKey(id);
+			return teacherMapper.deleteByPrimaryKey(id);
 		case Local:
-			return studentLocalCacheDao.deleteByPrimaryKey(id);
+			return teacherLocalCacheDao.deleteByPrimaryKey(id);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
 	}
 
 	@Override
-	public int updateByPrimaryKeySelective(Student student) {
+	public int updateByPrimaryKeySelective(Teacher teacher) {
 		switch(cacheModel) {
 		case None:
-			return studentMapper.updateByPrimaryKeySelective(student);
+			return teacherMapper.updateByPrimaryKeySelective(teacher);
 		case Local:
-			return studentLocalCacheDao.updateByPrimaryKeySelective(student);
+			return teacherLocalCacheDao.updateByPrimaryKeySelective(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
 	}
 
 	@Override
-	public int updateByPrimaryKey(Student student) {
+	public int updateByPrimaryKey(Teacher teacher) {
 		switch(cacheModel) {
 		case None:
-			return studentMapper.updateByPrimaryKey(student);
+			return teacherMapper.updateByPrimaryKey(teacher);
 		case Local:
-			return studentLocalCacheDao.updateByPrimaryKey(student);
+			return teacherLocalCacheDao.updateByPrimaryKey(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
 	}
 
 	@Override
-	public Student selectByPrimaryKey(String id) {
+	public Teacher selectByPrimaryKey(String id) {
 		switch(cacheModel) {
 		case None:
-			return studentMapper.selectByPrimaryKey(id);
+			return teacherMapper.selectByPrimaryKey(id);
 		case Local:
-			return studentLocalCacheDao.selectByPrimaryKey(id);
+			return teacherLocalCacheDao.selectByPrimaryKey(id);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
 	}
 
 	@Override
-	public Student selectSimpleByPrimaryKey(String id) {
+	public Teacher selectSimpleByPrimaryKey(String id) {
 		switch(cacheModel) {
 		case None:
-			return studentMapper.selectSimpleByPrimaryKey(id);
+			return teacherMapper.selectSimpleByPrimaryKey(id);
 		case Local:
-			return studentLocalCacheDao.selectSimpleByPrimaryKey(id);
+			return teacherLocalCacheDao.selectSimpleByPrimaryKey(id);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
 	}
 
 	@Override
-	public List<Student> select(Student student) {
+	public List<Teacher> select(Teacher teacher) {
 		switch(cacheModel) {
 		case None:
-			return studentMapper.select(student);
+			return teacherMapper.select(teacher);
 		case Local:
-			return studentLocalCacheDao.select(student);
+			return teacherLocalCacheDao.select(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
 	}
 
 	@Override
-	public List<Student> selectSimple(Student student) {
+	public List<Teacher> selectSimple(Teacher teacher) {
 		switch(cacheModel) {
 		case None:
-			return studentMapper.selectSimple(student);
+			return teacherMapper.selectSimple(teacher);
 		case Local:
-			return studentLocalCacheDao.selectSimple(student);
+			return teacherLocalCacheDao.selectSimple(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
 	}
-
 }

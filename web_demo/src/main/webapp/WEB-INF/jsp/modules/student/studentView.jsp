@@ -41,6 +41,22 @@
 		</div>
 		
 		<div class="form-group">
+			<label for="teacher.name" class="col-sm-4 control-label">老师名称:</label>
+			<div class="col-sm-8">
+				<input type="text" name="teacher.name" id="teacher.name" class="form-control" disabled="disabled"
+					value="${student.teacher.name }" />
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label for="teacher.age" class="col-sm-4 control-label">老师年龄:</label>
+			<div class="col-sm-8">
+				<input type="text" name="teacher.age" id="teacher.age" class="form-control" disabled="disabled"
+					value="${student.teacher.age }" />
+			</div>
+		</div>
+		
+		<div class="form-group">
 			<div class="col-sm-offset-4 col-sm-8">
 				<button type="submit" class="btn btn-primary">提交</button>
 				<button type="button" class="btn btn-default" onclick="history.go(-1)">返回</button>

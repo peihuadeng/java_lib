@@ -1,30 +1,81 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.dph.modules.teacher.dao.TeacherMapper" >
-  <resultMap id="BaseResultMap" type="com.dph.modules.teacher.entity.Teacher" >
-    <id column="id" property="id" jdbcType="VARCHAR" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="age" property="age" jdbcType="INTEGER" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-    id, name, age
+  <sql id="columns" >
+    teacher.id as "id",
+    teacher.name as "name",
+    teacher.age as "age"
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  
+  <sql id="all_columns">
+  	<include refid="columns"/>
+  </sql>
+  
+  <sql id="join_all">
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultType="com.dph.modules.teacher.entity.Teacher">
     select 
-    <include refid="Base_Column_List" />
+    <include refid="all_columns" />
+    from teacher
+    <include refid="join_all" />
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectSimpleByPrimaryKey" resultType="com.dph.modules.teacher.entity.Teacher">
+    select 
+    <include refid="columns" />
     from teacher
     where id = #{id,jdbcType=VARCHAR}
   </select>
+  
+  <select id="select" resultType="com.dph.modules.teacher.entity.Teacher">
+    select 
+    <include refid="all_columns" />
+    from teacher
+    <include refid="join_all" />
+    <where>
+	    <if test="id != null and id != ''">
+	    	id = #{id}
+	    </if>
+	    <if test="name != null and name != ''">
+	    	and name = #{name}
+	    </if>
+	    <if test="age != null">
+	    	and age = #{age} 
+	    </if>
+    </where>
+  </select>
+  
+  <select id="selectSimple" resultType="com.dph.modules.teacher.entity.Teacher">
+    select 
+    <include refid="columns" />
+    from teacher
+    <where>
+	    <if test="id != null and id != ''">
+	    	id = #{id}
+	    </if>
+	    <if test="name != null and name != ''">
+	    	and name = #{name}
+	    </if>
+	    <if test="age != null">
+	    	and age = #{age} 
+	    </if>
+    </where>
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from teacher
     where id = #{id,jdbcType=VARCHAR}
   </delete>
+  
   <insert id="insert" parameterType="com.dph.modules.teacher.entity.Teacher" >
     insert into teacher (id, name, age
       )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}
       )
   </insert>
+  
   <insert id="insertSelective" parameterType="com.dph.modules.teacher.entity.Teacher" >
     insert into teacher
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -50,6 +101,7 @@
       </if>
     </trim>
   </insert>
+  
   <update id="updateByPrimaryKeySelective" parameterType="com.dph.modules.teacher.entity.Teacher" >
     update teacher
     <set >
@@ -62,6 +114,7 @@
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  
   <update id="updateByPrimaryKey" parameterType="com.dph.modules.teacher.entity.Teacher" >
     update teacher
     set name = #{name,jdbcType=VARCHAR},
