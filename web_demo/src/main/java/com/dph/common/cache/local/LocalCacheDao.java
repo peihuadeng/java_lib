@@ -1,6 +1,8 @@
 package com.dph.common.cache.local;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends Base
 	@Autowired
 	protected Mapper mapper;
 
-	@Value("${cache.level:2}")
+	@Value("${cache.level:3}")
 	protected int level;
 
 	@Autowired
@@ -46,6 +48,9 @@ public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends Base
 	}
 
 	// 动态加载数据类属性
+	//TODO:测试继承关系及1+n问题
+	//TODO:相关field及dao/linkField存入map,提高性能
+	//TODO：JSON
 	protected void loadProperties(T t, int level) {
 		level--;
 		if (level <= 0) {
@@ -59,45 +64,42 @@ public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends Base
 				if (linkTo != null) {
 					String linkFieldName = linkTo.field();
 					Class<? extends CacheDao<?>> daoClazz = linkTo.dao();
-					// 1.get link field value
-					if (StringUtils.isBlank(linkFieldName)) {// link field can
-																// not be none
+					// 1.get link field value through getLinkField() method
+					if (StringUtils.isBlank(linkFieldName)) {// link field can not be none
 						logger.debug(String.format("class \"%s\" field \"%s\" @LinkTo field is empty", clazz.getName(), field.getName()));
 						continue;
 					}
-
-					Field linkField = null;
+					
+					String linkFieldGetMethodName = "get" + StringUtils.capitalize(linkFieldName);
+					Method linkFieldGetMethod = null;
+					
 					try {
-						linkField = clazz.getDeclaredField(linkFieldName);
-					} catch (NoSuchFieldException e) {
-						logger.debug(String.format("class \"%s\" has no such field named \"%s\"", clazz.getName(), linkFieldName), e);
-						continue;
+						linkFieldGetMethod = clazz.getMethod(linkFieldGetMethodName);
+					} catch (NoSuchMethodException e) {
+						logger.debug(String.format("class \"%s\" has no such method named \"%s\"", clazz.getName(), linkFieldGetMethodName), e);
 					} catch (SecurityException e) {
-						logger.debug(String.format("can not access class \"%s\" field named \"%s\"", clazz.getName(), linkFieldName), e);
+						logger.debug(String.format("can not access class \"%s\" method named \"%s\"", clazz.getName(), linkFieldGetMethodName), e);
+					}
+					
+					Class<?> linkFieldGetMethodReturnType = linkFieldGetMethod.getReturnType();
+					if (!String.class.isAssignableFrom(linkFieldGetMethodReturnType)) {
+						logger.debug(String.format("class \"%s\" method \"%s\" return type is not String.class", clazz.getName(), linkFieldGetMethodName));
 						continue;
 					}
-
-					Class<?> linkFieldType = linkField.getType();
-					if (!String.class.isAssignableFrom(linkFieldType)) {
-						logger.debug(String.format("class \"%s\" field \"%s\" type is not String.class", clazz.getName(), linkFieldName));
-						continue;
-					}
-
-					linkField.setAccessible(true);
+					
 					String linkFieldValue = null;
 					try {
-						linkFieldValue = (String) linkField.get(t);
-					} catch (IllegalArgumentException | IllegalAccessException e) {
-						logger.warn(String.format("fail to get class \"%s\" field \"%s\" value", clazz.getName(), linkField.getName()), e);
+						linkFieldValue = (String) linkFieldGetMethod.invoke(t);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						logger.warn(String.format("fail to invoke class \"%s\" method \"%s\"", clazz.getName(), linkFieldGetMethodName), e);
 					}
-
+					
 					if (StringUtils.isBlank(linkFieldValue)) {
-						logger.debug(String.format("the instance of class \"%s\" link field \"%s\" value is empty", clazz.getName(), linkField));
+						logger.debug(String.format("the instance of class \"%s\" link field \"%s\" value is empty", clazz.getName(), linkFieldName));
 						continue;
 					}
 
-					// 2.get field value through CacheDao object and link field
-					// value
+					// 2.get field value through CacheDao object and link field value
 					CacheDao<?> cacheDao = SpringContextHolder.getBean(daoClazz);
 					Object fieldValue = cacheDao.selectByPrimaryKey(linkFieldValue, level);
 
@@ -107,6 +109,7 @@ public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends Base
 						logger.debug(String.format("cache dao method \"selectByPrimaryKey\" return type \"%s\" is not match with class \"%s\" field \"%s\" type \"%s\"", fieldValue.getClass().getName(), clazz.getName(), field.getName(), fieldType.getName()));
 						continue;
 					}
+					
 					field.setAccessible(true);
 					try {
 						field.set(t, fieldValue);
