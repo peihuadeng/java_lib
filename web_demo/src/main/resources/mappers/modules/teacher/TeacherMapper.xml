@@ -4,7 +4,8 @@
   <sql id="columns" >
     teacher.id as "id",
     teacher.name as "name",
-    teacher.age as "age"
+    teacher.age as "age",
+    teacher.school_id as "schoolId"
   </sql>
   
   <sql id="all_columns">

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dph.modules.area.dao.AreaMapper" >
+  <sql id="columns" >
+    area.id as "id",
+    area.name as "name"
+  </sql>
+  
+  <sql id="all_columns">
+  	<include refid="columns"/>
+  </sql>
+  
+  <sql id="join_all">
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultType="com.dph.modules.area.entity.Area">
+    select 
+    <include refid="all_columns" />
+    from area
+    <include refid="join_all" />
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectSimpleByPrimaryKey" resultType="com.dph.modules.area.entity.Area">
+    select 
+    <include refid="columns" />
+    from area
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="select" resultType="com.dph.modules.area.entity.Area">
+    select 
+    <include refid="all_columns" />
+    from area
+    <include refid="join_all" />
+    <where>
+    	<if test="id != null and id != ''">
+    		id = #{id}
+    	</if>
+    	<if test="name != null and name != ''">
+    		name = #{name}
+    	</if>
+    </where>
+  </select>
+  
+  <select id="selectSimple" resultType="com.dph.modules.area.entity.Area">
+    select 
+    <include refid="columns" />
+    from area
+    <where>
+    	<if test="id != null and id != ''">
+    		id = #{id}
+    	</if>
+    	<if test="name != null and name != ''">
+    		name = #{name}
+    	</if>
+    </where>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from area
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+  <insert id="insert" parameterType="com.dph.modules.area.entity.Area" >
+    insert into area (id, name)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.dph.modules.area.entity.Area" >
+    insert into area
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.dph.modules.area.entity.Area" >
+    update area
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.dph.modules.area.entity.Area" >
+    update area
+    set name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

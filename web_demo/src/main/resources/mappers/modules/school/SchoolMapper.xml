@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dph.modules.school.dao.SchoolMapper" >
+
+  <sql id="columns" >
+    school.id as "id",
+    school.name as "name",
+    school.area_id as "areaId"
+  </sql>
+  
+  <sql id="all_columns">
+  	<include refid="columns"/>
+  </sql>
+  
+  <sql id="join_all">
+  </sql>
+  
+  
+  <select id="selectByPrimaryKey" resultType="com.dph.modules.school.entity.School" >
+    select 
+    <include refid="all_columns" />
+    from school
+    <include refid="join_all" />
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectSimpleByPrimaryKey" resultType="com.dph.modules.school.entity.School" >
+    select 
+    <include refid="columns" />
+    from school
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="select" resultType="com.dph.modules.school.entity.School" >
+    select 
+    <include refid="all_columns" />
+    from school
+    <include refid="join_all" />
+    <where>
+    	<if test="id != null and id != ''">
+    		id = #{id}
+    	</if>
+    	<if test="name != null and name != ''">
+    		name = #{name}
+    	</if>
+    	<if test="areaId != null and areaId != ''">
+    		area_id = #{areaId}
+    	</if>
+    </where>
+  </select>
+  
+  <select id="selectSimple" resultType="com.dph.modules.school.entity.School" >
+    select 
+    <include refid="columns" />
+    from school
+    <where>
+    	<if test="id != null and id != ''">
+    		id = #{id}
+    	</if>
+    	<if test="name != null and name != ''">
+    		name = #{name}
+    	</if>
+    	<if test="areaId != null and areaId != ''">
+    		area_id = #{areaId}
+    	</if>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from school
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+  <insert id="insert" parameterType="com.dph.modules.school.entity.School" >
+    insert into school (id, name, area_id
+      )
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{areaId,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.dph.modules.school.entity.School" >
+    insert into school
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="areaId != null" >
+        area_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="areaId != null" >
+        #{areaId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.dph.modules.school.entity.School" >
+    update school
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="areaId != null" >
+        area_id = #{areaId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.dph.modules.school.entity.School" >
+    update school
+    set name = #{name,jdbcType=VARCHAR},
+      area_id = #{areaId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

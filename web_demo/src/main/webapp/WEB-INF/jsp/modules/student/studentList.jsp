@@ -21,6 +21,8 @@
 					<td>老师ID</td>
 					<td>老师名称</td>
 					<td>老师年龄</td>
+					<td>school</td>
+					<td>area</td>
 					<td>操作</td>
 				</tr>
 			</thead>
@@ -33,6 +35,8 @@
 						<td>${student.teacherId}</td>
 						<td>${student.teacher.name}</td>
 						<td>${student.teacher.age}</td>
+						<td>${not empty student.teacher.school ? student.teacher.school.name : ""}</td>
+						<td>${not empty student.teacher.school && notstudent.teacher.school.area ? student.teacher.school.area.name : ""}</td>
 						<td><a href="student/delete?id=${student.id}">删除</a></td>
 					</tr>
 				</c:forEach>

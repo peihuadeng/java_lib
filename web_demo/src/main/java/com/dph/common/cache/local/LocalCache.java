@@ -76,4 +76,20 @@ public class LocalCache<T> {
 		return value;
 	}
 
+	/**
+	 * 是否包含目标key
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public boolean contains(Serializable key) {
+		check();
+		Element element = cache.get(key);
+		if (element != null) {
+			return true;
+		}
+
+		return false;
+	}
+
 }
