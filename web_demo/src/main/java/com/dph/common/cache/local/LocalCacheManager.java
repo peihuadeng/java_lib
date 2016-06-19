@@ -35,7 +35,7 @@ public class LocalCacheManager {
 		Cache cache = new Cache(new CacheConfiguration(name, 1024).eternal(false).timeToIdleSeconds(1800).timeToLiveSeconds(1800).overflowToDisk(false).memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.LRU));
 
 		cacheManager.addCache(cache);
-		LocalCache<T> localCache = new LocalCache<T>(cache);
+		LocalCache<T> localCache = new LocalCache<T>(cache, clazz);
 		cacheMap.put(name, localCache);
 
 		return localCache;
@@ -54,7 +54,7 @@ public class LocalCacheManager {
 		if (localCache == null) {
 			Cache cache = cacheManager.getCache(name);
 			if (cache != null) {
-				localCache = new LocalCache<T>(cache);
+				localCache = new LocalCache<T>(cache, clazz);
 				cacheMap.put(name, localCache);
 			}
 		}

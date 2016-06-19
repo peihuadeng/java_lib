@@ -103,7 +103,6 @@ public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends Base
 	}
 
 	// 动态加载数据类属性
-	// TODO：JSON
 	protected void loadProperties(T t, int level) {
 		if (t == null) {
 			return;

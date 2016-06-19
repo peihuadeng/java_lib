@@ -2,6 +2,8 @@ package com.dph.common.cache.local;
 
 import java.io.Serializable;
 
+import com.dph.common.json.JsonUtil;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
@@ -16,17 +18,19 @@ public class LocalCache<T> {
 	 * 对ehcahce缓存引用，必须非空
 	 */
 	private Cache cache;
+	private Class<T> entityClass;
 
-	public LocalCache(Cache cache) {
+	public LocalCache(Cache cache, Class<T> clazz) {
 		if (cache == null) {
 			throw new RuntimeException("cache object must not be null.");
 		}
 		this.cache = cache;
+		this.entityClass = clazz;
 	}
 
 	private void check() {
 		if (cache == null) {
-			throw new RuntimeException("cache object must not be null.");
+			throw new RuntimeException("cache object is null.");
 		}
 	}
 
@@ -39,7 +43,8 @@ public class LocalCache<T> {
 	 */
 	public boolean putValue(Serializable key, T value) {
 		check();
-		Element element = new Element(key, value);
+		String json = JsonUtil.bean2Str(value);
+		Element element = new Element(key, json);
 		cache.put(element);
 
 		return true;
@@ -63,7 +68,6 @@ public class LocalCache<T> {
 	 * @param clazz
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public T getValue(Serializable key) {
 		check();
 		Element element = cache.get(key);
@@ -71,11 +75,12 @@ public class LocalCache<T> {
 			return null;
 		}
 
-		T value = (T) element.getValue();
+		String json = (String) element.getValue();
+		T t = (T) JsonUtil.str2bean(json, entityClass);
 
-		return value;
+		return t;
 	}
-
+	
 	/**
 	 * 是否包含目标key
 	 * 

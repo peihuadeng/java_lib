@@ -3,108 +3,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script type="text/javascript">
-var stompClient = null;
-var messageMapping = "/app/notice/annotation";
-var subscribe_topic = "/app/init";
-var message_topic = "/topic/notice";
-var subscribe_topic_subscription = null;
-var message_topic_subscription = null;
-
-function setConnected(connected) {
-	document.getElementById("connect").disabled = connected;
-	document.getElementById("disconnect").disabled = !connected;
-	document.getElementById("conversationDiv").style.visibility = connected ? "visible" : "hidden";
-	document.getElementById("response").innerHTML = "";
+<script src="js/stompClient.js"></script><script type="text/javascript">
+var topic = "/topic/notice";
+var topicId = null;
+function receiveTopicMessage(data) {
+	var response = document.getElementById('response');
+    var p = document.createElement('p');
+    p.style.wordWrap = 'break-word';
+    p.appendChild(document.createTextNode("message topic: " + decodeURIComponent(data)));
+    response.appendChild(p);
 }
 
-function connectedCallback(frame) {
-	console.log(frame);
-	
-	setConnected(true);
-	
-	//message topic
-	message_topic_subscription = stompClient.subscribe(message_topic, function(data) {
-		console.log(data);
-		console.log(decodeURIComponent(JSON.stringify(data)));
-		
-		var response = document.getElementById('response');
-        var p = document.createElement('p');
-        p.style.wordWrap = 'break-word';
-        p.appendChild(document.createTextNode("message topic: " + decodeURIComponent(data.body)));
-        response.appendChild(p);
+$(document).ready(function() {
+	$("#subcribe").click(function() {
+		checkStompClient("${pageContext.request.contextPath}/socket");
+		topicId = top.stompClient.subscribe(topic, receiveTopicMessage);
+		console.log(topicId);
+		$("#subcribe").attr("disabled", "disabled");
+		$("#subcribe").addClass("btn-default disabled");
+		$("#subcribe").removeClass("btn-primary");
+		$("#unsubcribe").removeAttr("disabled");
+		$("#unsubcribe").removeClass("btn-default disabled");
+		$("#unsubcribe").addClass("btn-primary");
 	});
-	
-	//subscribe topic 仅返回一次消息
-	subscribe_topic_subscription = stompClient.subscribe(subscribe_topic, function(data) {
-		console.log(data);
-		console.log(decodeURIComponent(JSON.stringify(data)));
-		
-		var response = document.getElementById('response');
-        var p = document.createElement('p');
-        p.style.wordWrap = 'break-word';
-        p.appendChild(document.createTextNode("subscribe topic: " + decodeURIComponent(data.body)));
-        response.appendChild(p);
-	});	
-}
 
-function errorCallback(error) {
-	alert(JSON.stringify(error));
-}
-
-function connect() {
-	var socket = new SockJS("${pageContext.request.contextPath}/socket");
-	stompClient = Stomp.over(socket);
-	var headers = {};
-	
-	stompClient.connect(headers, connectedCallback, errorCallback);
-}
-
-function sendName() {
-	var value = document.getElementById("name").value;
-	stompClient.send(messageMapping, {}, encodeURIComponent(value));
-}
-
-function disconnect() {
-	if (subscribe_topic_subscription != null) {
-		subscribe_topic_subscription.unsubscribe();
-		subscribe_topic_subscription = null;
+	$("#unsubcribe").click(function() {
+		checkStompClient("${pageContext.request.contextPath}/socket");
+		top.stompClient.unsubscribe(topicId);
+		$("#subcribe").removeAttr("disabled");
+		$("#subcribe").removeClass("btn-default disabled");
+		$("#subcribe").addClass("btn-primary");
+		$("#unsubcribe").attr("disabled", "disabled");
+		$("#unsubcribe").addClass("btn-default disabled");
+		$("#unsubcribe").removeClass("btn-primary");
+	});
+});
+//离开页面，断开链接
+$(window).bind("beforeunload", function() {
+	if (top == this && top.stompClient != null) {
+		top.stompClient.disconnect();
 	}
-
-	if (message_topic_subscription != null) {
-		message_topic_subscription.unsubscribe();
-		message_topic_subscription = null;
-	}
-	
-	if (stompClient != null) {
-		stompClient.disconnect(function() {
-			alert("disconnected");
-		});
-		stompClient = null;
-	}
-	
-	setConnected(false);
-	console.log("disconnected");
-}
-
+});
 
 </script>
 <title>test stomp</title>
 </head>
 <body>
-<div>    
-    <div>        
-        <button id="connect" onclick="connect();">Connect</button> 
-       <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>    
-    </div>    
-    <div id="conversationDiv" style="visibility:hidden;">
-        <p>            
-            <label>notice content?</label>        
-        </p>        
-        <p>            
-              <textarea id="name" rows="5"></textarea>        
-        </p>        
-        <button id="sendName" onclick="sendName();">Send</button>        
+<div>
+	<button id="subcribe" class="btn btn-primary">订阅</button>
+	<button id="unsubcribe" disabled="disabled" class="btn btn-default disabled">取消订阅</button>
+    <div id="conversationDiv">
         <p id="response"></p>
     </div>
 </div>
