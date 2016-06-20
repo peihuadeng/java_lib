@@ -85,6 +85,10 @@ function StompClient(url) {
 			});
 		}
 	};
+	//返回连接状态
+	self.isConnected = function() {
+		return self._isConnected;
+	}
 	//订阅，返回订阅id
 	self.subscribe = function(topic, callback, id) {
 		//创建service
@@ -115,5 +119,13 @@ function StompClient(url) {
 			}
 			self._subscriptionMap.delete(id);
 		}
+	};
+	//发送消息
+	self.sendMessage = function(destination, headers, message) {
+		if (self._isConnected == false) {
+			return false;
+		}
+		
+		self._stomp.send(destination, headers, encodeURIComponent(message));
 	};
 }

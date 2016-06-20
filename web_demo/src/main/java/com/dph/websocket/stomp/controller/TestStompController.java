@@ -3,22 +3,18 @@ package com.dph.websocket.stomp.controller;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.dph.websocket.stomp.entity.Topic;
+import com.dph.websocket.stomp.service.PublishService;
+
 @Controller
 @RequestMapping("/websocket")
-public class GreetingController {
-	
-	private DispatchTopicRunnable dispatchTopicRunnable;
-	
-	@Autowired
-	private SimpMessagingTemplate simpMessagingTemplate;
+public class TestStompController {
 	
 	@RequestMapping("/stomp")
 	public String stomp() {
@@ -30,7 +26,10 @@ public class GreetingController {
 	@MessageMapping("/notice/template")
 	public void noticeTemplate(String value) {
 		System.out.println("message mapping: /notice/template, message:  " + value);
-		simpMessagingTemplate.convertAndSend("/topic/notice", "template send : " + value);
+		Topic topic = new Topic();
+		topic.setDestination("/topic/notice");
+		topic.setMessage("template send : " + value);
+		PublishService.getInstance().publishTopic(topic);
 	}
 
 	@MessageMapping("/notice/annotation")
@@ -49,18 +48,20 @@ public class GreetingController {
 	
 	@PostConstruct
 	public void init() {
-		dispatchTopicRunnable = new DispatchTopicRunnable();
-		dispatchTopicRunnable.init();
-		Thread sendThread = new Thread(dispatchTopicRunnable);
+		publishTopicRunnable = new PublishTopicRunnable();
+		publishTopicRunnable.init();
+		Thread sendThread = new Thread(publishTopicRunnable);
 		sendThread.start();
 	}
 
 	@PreDestroy
 	public void destory() {
-		dispatchTopicRunnable.destory();
+		publishTopicRunnable.destory();
 	}
+	
+	private PublishTopicRunnable publishTopicRunnable;
 
-	private class DispatchTopicRunnable implements Runnable {
+	private class PublishTopicRunnable implements Runnable {
 
 		public final static byte STATUS_RUNNING = 0;
 		public final static byte STATUS_STOPPED = 1;
@@ -78,12 +79,15 @@ public class GreetingController {
 		public void run() {
 			while (status == STATUS_RUNNING) {
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
 				
-//				simpMessagingTemplate.convertAndSend("/topic/notice", "heardbeat");
+				Topic topic = new Topic();
+				topic.setDestination("/topic/notice");
+				topic.setMessage("heartbeat");
+				PublishService.getInstance().publishTopic(topic);
 
 			}
 		}

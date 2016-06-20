@@ -38,3 +38,15 @@ $(document).ready(function() {
 $(window).unload(function() {
 	closeTip();
 });
+
+//检测stomp client是否存在及连接，如不存在则创建并连接
+function checkStompClient(url) {
+	//创建客户端
+	if (top.stompClient == undefined || top.stompClient == null) {
+		top.stompClient = new top.StompClient(url);
+	}
+	//连接服务器
+	if (top.stompClient.isConnected() == false) {
+		top.stompClient.connect();
+	}
+}

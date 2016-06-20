@@ -12,9 +12,6 @@
 <!-- bootstrap -->
 <link rel="stylesheet" href="lib/bootstrap/3.3.5/dist/css/bootstrap.min.css">
 <script src="lib/bootstrap/3.3.5/dist/js/bootstrap.min.js"></script>
-<!-- sockjs & stomp -->
-<script src="lib/sockjs/sockjs-0.3.min.js"></script>
-<script src="lib/sockjs/stomp.min.js"></script>
 <!-- jquery-validation -->
 <script src="lib/jquery/jquery-validation/1.15.0/dist/jquery.validate.min.js"></script>
 <script src="lib/jquery/jquery-validation/1.15.0/dist/additional-methods.min.js"></script>
