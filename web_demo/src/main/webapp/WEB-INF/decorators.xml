@@ -4,6 +4,7 @@
 	<excludes>
 		<pattern>/css/*</pattern>
 		<pattern>/html/*</pattern>
+		<pattern>/images/*</pattern>
 		<pattern>/js/*</pattern>
 		<pattern>/lib/*</pattern>
 		<pattern>/druid/*</pattern>

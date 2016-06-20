@@ -56,6 +56,7 @@
 			<mvc:mapping path="/**" />
 			<mvc:exclude-mapping path="/css/**" />
 			<mvc:exclude-mapping path="/html/**" />
+			<mvc:exclude-mapping path="/images/**" />
 			<mvc:exclude-mapping path="/js/**" />
 			<mvc:exclude-mapping path="/lib/**" />
 			<bean class="com.dph.interceptor.TimeInterceptor" />

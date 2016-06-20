@@ -148,10 +148,12 @@
 				<!-- 静态资源：匿名访问 -->
 				/css/** = anon
 				/html/** = anon
+				/images/** = anon
 				/js/** = anon
 				/lib/** = anon
 				<!-- 首页：匿名访问 -->
-				/index.jsp = anon
+				/ = anon
+				/index = anon
 				<!-- 无权限提示页：匿名访问 -->
 				/sys/unauthorized = anon
 				<!-- 验证码：匿名访问 -->
