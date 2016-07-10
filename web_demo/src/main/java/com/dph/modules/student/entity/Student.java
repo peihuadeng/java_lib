@@ -16,7 +16,7 @@ public class Student extends BaseEntity<Student> {
 	private String teacherId;
 
 	@LinkTo(field = "teacherId", dao = TeacherLocalCacheDao.class)
-	private transient Teacher teacher;
+	private Teacher teacher;
 
 	public String getName() {
 		return name;

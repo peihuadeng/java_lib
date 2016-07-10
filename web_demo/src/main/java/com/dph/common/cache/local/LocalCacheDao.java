@@ -207,7 +207,7 @@ public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends Base
 			t = localCache.getValue(id);
 		} else {// get from db and put into cache
 			t = mapper.selectSimpleByPrimaryKey(id);
-			localCache.putValue(id, t);			
+			localCache.putValue(id, t);
 		}
 		// join cache or db
 		loadProperties(t, level);
@@ -226,7 +226,7 @@ public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends Base
 			t = localCache.getValue(id);
 		} else {// get from db and put into cache
 			t = mapper.selectSimpleByPrimaryKey(id);
-			localCache.putValue(id, t);			
+			localCache.putValue(id, t);
 		}
 
 		return t;
