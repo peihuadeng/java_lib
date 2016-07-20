@@ -23,6 +23,20 @@ public class TestStompController {
 		return destPage;
 	}
 	
+	@RequestMapping("/testStomp")
+	public String testStomp() {
+		String destPage = "/websocket/testStomp";
+		
+		return destPage;
+	}
+	
+	@RequestMapping("/testStompIframe")
+	public String testStompIframe() {
+		String destPage = "/websocket/testStompIframe";
+		
+		return destPage;
+	}
+	
 	@MessageMapping("/notice/template")
 	public void noticeTemplate(String value) {
 		System.out.println("message mapping: /notice/template, message:  " + value);
@@ -79,7 +93,7 @@ public class TestStompController {
 		public void run() {
 			while (status == STATUS_RUNNING) {
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(1000);
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
@@ -88,7 +102,6 @@ public class TestStompController {
 				topic.setDestination("/topic/notice");
 				topic.setMessage("heartbeat");
 				PublishService.getInstance().publishTopic(topic);
-
 			}
 		}
 	}

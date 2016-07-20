@@ -82,7 +82,7 @@ $(document).ready(function() {
 
 var stompClient = null;
 //离开页面，取消订阅及断开链接
-$(window).bind("beforeunload", function() {
+$(window).unload(function() {
 	//取消订阅
 	if (topicId != undefined && topicId != null && top.stompClient != null) {
 		top.stompClient.unsubscribe(topicId);

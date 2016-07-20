@@ -119,6 +119,7 @@
 		<servlet-name>DruidStatView </servlet-name>
 		<servlet-class>com.alibaba.druid.support.http.StatViewServlet
 		</servlet-class>
+		<async-supported>true</async-supported>
 		<init-param>
 			<!-- 允许访问的地址列表配置，其他地址不允许访问 -->
 			<param-name>allow</param-name>
@@ -145,6 +146,7 @@
 		<filter-name>DruidWebStatFilter </filter-name>
 		<filter-class>com.alibaba.druid.support.http.WebStatFilter
 		</filter-class>
+		<async-supported>true</async-supported>
 		<init-param>
 			<!-- 过滤不需要统计的url -->
 			<param-name>exclusions</param-name>
@@ -196,6 +198,7 @@
 		<filter-name>sitemesh</filter-name>
 		<filter-class>com.opensymphony.module.sitemesh.filter.PageFilter
 		</filter-class>
+		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
 		<filter-name>sitemesh</filter-name>

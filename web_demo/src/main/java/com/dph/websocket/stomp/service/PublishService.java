@@ -138,7 +138,7 @@ public class PublishService {
 		/**
 		 * 停止线程
 		 */
-		public void destory() {
+		public synchronized void destory() {
 			status = STATUS_STOPPED;
 			this.notifyAll();
 		}
