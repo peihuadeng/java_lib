@@ -32,6 +32,7 @@ websocket demo：
 <ul>
 	<li><a href="html/websocket/websocket.html" target="_blank">简单websocket应用</a></li>
 	<li><a href="websocket/stomp" target="_blank">websocket子协议stomp应用（使用sockjs兼容所有浏览器）</a></li>
+	<li><a href="websocket/testStomp" target="_blank">websocket子协议stomp测试</a></li>
 </ul>
 </body>
 </html>

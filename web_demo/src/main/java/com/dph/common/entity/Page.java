@@ -21,7 +21,7 @@ public class Page<T> {
 	}
 
 	public void setPageNo(int pageNo) {
-		this.pageNo = pageNo;
+		this.pageNo = pageNo >= 1? pageNo : 1;
 	}
 
 	public int getPageSize() {
@@ -29,7 +29,7 @@ public class Page<T> {
 	}
 
 	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
+		this.pageSize = pageSize >= 1? pageSize : 1;
 	}
 
 	public int getTotalRecord() {

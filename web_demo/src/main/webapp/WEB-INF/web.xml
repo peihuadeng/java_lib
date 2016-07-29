@@ -150,7 +150,7 @@
 		<init-param>
 			<!-- 过滤不需要统计的url -->
 			<param-name>exclusions</param-name>
-			<param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*
+			<param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/druid
 			</param-value>
 		</init-param>
 		<init-param>
