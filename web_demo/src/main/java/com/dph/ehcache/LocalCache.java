@@ -1,8 +1,8 @@
-package com.dph.common.cache.local;
+package com.dph.ehcache;
 
 import java.io.Serializable;
 
-import com.dph.common.json.JsonUtil;
+import com.dph.common.utils.JsonUtils;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -43,7 +43,7 @@ public class LocalCache<T> {
 	 */
 	public boolean putValue(Serializable key, T value) {
 		check();
-		String json = JsonUtil.bean2Str(value);
+		String json = JsonUtils.bean2Str(value);
 		Element element = new Element(key, json);
 		cache.put(element);
 
@@ -76,7 +76,7 @@ public class LocalCache<T> {
 		}
 
 		String json = (String) element.getValue();
-		T t = (T) JsonUtil.str2bean(json, entityClass);
+		T t = (T) JsonUtils.str2bean(json, entityClass);
 
 		return t;
 	}

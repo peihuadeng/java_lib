@@ -1,4 +1,4 @@
-package com.dph.common.json;
+package com.dph.common.utils;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author root
  *
  */
-public class JsonUtil {
+public class JsonUtils {
 
-	private final static Logger logger = LoggerFactory.getLogger(JsonUtil.class);
+	private final static Logger logger = LoggerFactory.getLogger(JsonUtils.class);
 
 	public static ObjectMapper getObjectMapper() {
 		return new ObjectMapper();

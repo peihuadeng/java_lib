@@ -1,4 +1,4 @@
-package com.dph.common.cache.local;
+package com.dph.ehcache;
 
 import java.util.Map;
 

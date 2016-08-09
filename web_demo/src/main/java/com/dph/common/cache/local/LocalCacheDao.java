@@ -19,6 +19,8 @@ import com.dph.common.cache.annotation.LinkTo;
 import com.dph.common.entity.BaseEntity;
 import com.dph.common.persistence.BaseDao;
 import com.dph.common.utils.StringUtils;
+import com.dph.ehcache.LocalCache;
+import com.dph.ehcache.LocalCacheManager;
 import com.dph.system.context.SpringContextHolder;
 
 public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends BaseDao<T>> implements CacheDao<T> {

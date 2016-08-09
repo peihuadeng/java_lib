@@ -1,9 +1,9 @@
-package com.dph.common.redis;
+package com.dph.redis;
 
 import java.util.List;
 import java.util.Map;
 
-import com.dph.common.json.JsonUtil;
+import com.dph.common.utils.JsonUtils;
 
 import redis.clients.jedis.ShardedJedis;
 
@@ -68,7 +68,7 @@ public class RedisClient {
 		}
 
 		try {
-			String json = JsonUtil.bean2Str(obj);
+			String json = JsonUtils.bean2Str(obj);
 			client.set(key, json);
 		} finally {
 			client.close();
@@ -93,7 +93,7 @@ public class RedisClient {
 				return null;
 			}
 			
-			T t = JsonUtil.str2bean(json, clazz);
+			T t = JsonUtils.str2bean(json, clazz);
 			return t;
 		} finally {
 			client.close();
@@ -118,7 +118,7 @@ public class RedisClient {
 				return null;
 			}
 			
-			List<T> list = JsonUtil.str2list(json, clazz);
+			List<T> list = JsonUtils.str2list(json, clazz);
 			return list;
 		} finally {
 			client.close();
@@ -144,7 +144,7 @@ public class RedisClient {
 				return null;
 			}
 			
-			Map<KT, VT> map = JsonUtil.str2map(json, keyClass, valueClass);
+			Map<KT, VT> map = JsonUtils.str2map(json, keyClass, valueClass);
 			return map;
 		} finally {
 			client.close();
