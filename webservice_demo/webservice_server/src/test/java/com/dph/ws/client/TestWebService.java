@@ -11,14 +11,14 @@ import com.dph.ws.server.HelloWorld;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:spring-context.xml")
 public class TestWebService {
-	
+
 	@Autowired
 	private HelloWorld helloWorld;
-	
+
 	@Test
 	public void mainTest() {
 		String result = helloWorld.hello("hua");
-		
+
 		System.out.println(result);
 	}
 
