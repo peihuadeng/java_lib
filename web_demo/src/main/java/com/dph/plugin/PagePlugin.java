@@ -25,10 +25,12 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandlerRegistry;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dph.common.entity.BaseEntity;
 import com.dph.common.entity.Page;
+import com.dph.common.utils.StringUtils;
 
 /**
  * 
@@ -47,7 +49,7 @@ import com.dph.common.entity.Page;
 @Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class }) })
 public class PagePlugin implements Interceptor {
 
-	private final static Logger logger = Logger.getLogger(PagePlugin.class);
+	private final static Logger logger = LoggerFactory.getLogger(PagePlugin.class);
 
 	/**
 	 * 拦截后要执行的方法
@@ -84,7 +86,9 @@ public class PagePlugin implements Interceptor {
 				// 获取当前要执行的Sql语句，也就是我们直接在Mapper映射语句中写的Sql语句
 				String sql = boundSql.getSql();
 				// 给当前的page参数对象设置总记录数
-				this.setTotalRecord(entity, mappedStatement, connection);
+				if (page.isGetTotal()) {
+					this.setTotalRecord(entity, mappedStatement, connection);					
+				}
 				// 获取分页Sql语句
 				String pageSql = this.getPageSql(page, sql);
 				// 利用反射设置当前BoundSql对应的sql属性为我们建立好的分页Sql语句
@@ -139,6 +143,10 @@ public class PagePlugin implements Interceptor {
 	 * @return Mysql数据库分页语句
 	 */
 	private void getMysqlPageSql(Page<?> page, StringBuffer sqlBuffer) {
+		String order = page.getOrder();
+		if (StringUtils.isNotBlank(order)) {
+			sqlBuffer.append(" order by ").append(order);
+		}
 		// 计算第一条记录的位置，Mysql中记录的位置是从0开始的。
 		int offset = (page.getPageNo() - 1) * page.getPageSize();
 		offset = offset >= 0 ? offset : 0;

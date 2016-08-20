@@ -6,6 +6,8 @@ public class Page<T> {
 
 	private int pageNo = 1;
 	private int pageSize = 30;
+	private String order;
+	private boolean isGetTotal = true;
 	private int totalRecord;
 	private int totalPage;
 	private List<T> results;
@@ -80,4 +82,19 @@ public class Page<T> {
 		this.results = results;
 	}
 
+	public String getOrder() {
+		return order;
+	}
+
+	public void setOrder(String order) {
+		this.order = order;
+	}
+
+	public boolean isGetTotal() {
+		return isGetTotal;
+	}
+
+	public void setGetTotal(boolean isGetTotal) {
+		this.isGetTotal = isGetTotal;
+	}
 }
