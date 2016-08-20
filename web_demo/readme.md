@@ -39,3 +39,5 @@ druid统计页面：http://dev:8080/web_demo/druid
 websocket测试页面（连接websocket需要登录）：http://dev:8080/web_demo/html/websocket/websocket.html
 stomp测试页面：http://dev:8080/web_demo/websocket/stomp
 
+#遗留问题
+1.ehcache持久化：在杀进程后启动tomcat，发现持久化缓存被清空了

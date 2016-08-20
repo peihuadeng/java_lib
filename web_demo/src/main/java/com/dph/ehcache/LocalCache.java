@@ -46,6 +46,9 @@ public class LocalCache<T> {
 		String json = JsonUtils.bean2Str(value);
 		Element element = new Element(key, json);
 		cache.put(element);
+		if (cache.getCacheConfiguration().isDiskPersistent()) {
+			cache.flush();
+		}
 
 		return true;
 	}
@@ -58,7 +61,12 @@ public class LocalCache<T> {
 	 */
 	public boolean remove(Serializable key) {
 		check();
-		return cache.remove(key);
+		boolean result = cache.remove(key);
+		if (cache.getCacheConfiguration().isDiskPersistent()) {
+			cache.flush();
+		}
+		
+		return result;
 	}
 
 	/**

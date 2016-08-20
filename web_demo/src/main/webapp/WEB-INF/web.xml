@@ -114,6 +114,11 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
+	<!-- ehcache 磁盘缓存 监控，持久化恢复 -->  
+	<listener>  
+	    <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>  
+	</listener>
+
 	<!-- 配置Druid内置监控功能 -->
 	<servlet>
 		<servlet-name>DruidStatView </servlet-name>

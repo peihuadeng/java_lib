@@ -17,16 +17,19 @@
 	<diskStore path="java.io.tmpdir" />
 
 	<defaultCache     
-            maxElementsInMemory="10000"    
+            maxElementsInMemory="102400"    
             eternal="false"    
             timeToIdleSeconds="120"    
             timeToLiveSeconds="120"    
             overflowToDisk="true"    
-            maxElementsOnDisk="10000000"    
+            maxElementsOnDisk="1024000"    
             diskPersistent="false"    
             diskExpiryThreadIntervalSeconds="120"
             diskSpoolBufferSizeMB="30"
             memoryStoreEvictionPolicy="LRU">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />  
+        <!-- 比一般配置多了这个 -->  
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>  
     </defaultCache>
 
 	<!-- SimplePageCachingFilter默认cache名字：SimplePageCachingFilter -->

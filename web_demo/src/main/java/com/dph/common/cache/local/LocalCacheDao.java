@@ -47,7 +47,7 @@ public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends Base
 		boolean success = doInit();
 		if (!success) {
 			Class<T> entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-			localCache = cacheManager.getCache("Object:" + entityClass.getName(), entityClass, true);
+			localCache = cacheManager.getAndCreateCache(entityClass);
 
 			Class<?> clazz = entityClass;
 			while (clazz != null) {
