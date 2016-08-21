@@ -17,7 +17,6 @@ My97DatePicker日期组件
 sockjs + stomp
 
 
-
 #单点登录配置
 1.移除以下文件：
 /web_demo/src/main/resources/spring-context-shiro.xml
@@ -30,6 +29,10 @@ sockjs + stomp
 3.需与java_lib/cas_demo/cas-server-webapp工程（单点登录服务器端）配合使用
 
 
+#数据库
+1.创建名为web_demo的数据库，编码:utf8
+2.修改jdbc.properties配置文件中的相关参数
+3.系统初始化数据中，账号密码为:admin/123456, user/123456
 
 #部分重要的url
 首页页面：http://dev:8080/web_demo/index.jsp
@@ -39,5 +42,8 @@ druid统计页面：http://dev:8080/web_demo/druid
 websocket测试页面（连接websocket需要登录）：http://dev:8080/web_demo/html/websocket/websocket.html
 stomp测试页面：http://dev:8080/web_demo/websocket/stomp
 
+
 #遗留问题
 1.ehcache持久化：在杀进程后启动tomcat，发现持久化缓存被清空了
+
+
