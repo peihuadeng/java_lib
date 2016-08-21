@@ -21,6 +21,9 @@ public class TeacherDao implements BaseDao<Teacher> {
 	
 	@Autowired
 	private TeacherLocalCacheDao teacherLocalCacheDao;
+	
+	@Autowired
+	private TeacherRemoteCacheDao teacherRemoteCacheDao;
 
 	@Override
 	public int insert(Teacher teacher) {
@@ -29,6 +32,8 @@ public class TeacherDao implements BaseDao<Teacher> {
 			return teacherMapper.insert(teacher);
 		case Local:
 			return teacherLocalCacheDao.insert(teacher);
+		case Remote:
+			return teacherRemoteCacheDao.insert(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -41,6 +46,8 @@ public class TeacherDao implements BaseDao<Teacher> {
 			return teacherMapper.insertSelective(teacher);
 		case Local:
 			return teacherLocalCacheDao.insertSelective(teacher);
+		case Remote:
+			return teacherRemoteCacheDao.insertSelective(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -53,6 +60,8 @@ public class TeacherDao implements BaseDao<Teacher> {
 			return teacherMapper.deleteByPrimaryKey(id);
 		case Local:
 			return teacherLocalCacheDao.deleteByPrimaryKey(id);
+		case Remote:
+			return teacherRemoteCacheDao.deleteByPrimaryKey(id);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -65,6 +74,8 @@ public class TeacherDao implements BaseDao<Teacher> {
 			return teacherMapper.updateByPrimaryKeySelective(teacher);
 		case Local:
 			return teacherLocalCacheDao.updateByPrimaryKeySelective(teacher);
+		case Remote:
+			return teacherRemoteCacheDao.updateByPrimaryKeySelective(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -77,6 +88,8 @@ public class TeacherDao implements BaseDao<Teacher> {
 			return teacherMapper.updateByPrimaryKey(teacher);
 		case Local:
 			return teacherLocalCacheDao.updateByPrimaryKey(teacher);
+		case Remote:
+			return teacherRemoteCacheDao.updateByPrimaryKey(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -89,6 +102,8 @@ public class TeacherDao implements BaseDao<Teacher> {
 			return teacherMapper.selectByPrimaryKey(id);
 		case Local:
 			return teacherLocalCacheDao.selectByPrimaryKey(id);
+		case Remote:
+			return teacherRemoteCacheDao.selectByPrimaryKey(id);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -101,6 +116,8 @@ public class TeacherDao implements BaseDao<Teacher> {
 			return teacherMapper.selectSimpleByPrimaryKey(id);
 		case Local:
 			return teacherLocalCacheDao.selectSimpleByPrimaryKey(id);
+		case Remote:
+			return teacherRemoteCacheDao.selectSimpleByPrimaryKey(id);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -113,6 +130,8 @@ public class TeacherDao implements BaseDao<Teacher> {
 			return teacherMapper.select(teacher);
 		case Local:
 			return teacherLocalCacheDao.select(teacher);
+		case Remote:
+			return teacherRemoteCacheDao.select(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -125,6 +144,8 @@ public class TeacherDao implements BaseDao<Teacher> {
 			return teacherMapper.selectSimple(teacher);
 		case Local:
 			return teacherLocalCacheDao.selectSimple(teacher);
+		case Remote:
+			return teacherRemoteCacheDao.selectSimple(teacher);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}

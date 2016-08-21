@@ -57,6 +57,44 @@ public class RedisClient {
 	}
 
 	/**
+	 * 移除key:value
+	 * @param key
+	 * @return
+	 */
+	public static Long del(String key) {
+		ShardedJedis client = manager.getResource();
+		if (client == null) {
+			return null;
+		}
+
+		try {
+			Long result = client.del(key);
+			return result;
+		} finally {
+			client.close();
+		}
+	}
+	
+	/**
+	 * 判断是否存在key
+	 * @param key
+	 * @return
+	 */
+	public static Boolean exists(String key) {
+		ShardedJedis client = manager.getResource();
+		if (client == null) {
+			return null;
+		}
+
+		try {
+			Boolean result = client.exists(key);
+			return result;
+		} finally {
+			client.close();
+		}
+	}
+
+	/**
 	 * 把对象转换成json，然后设置key：json键值对
 	 * @param key
 	 * @param obj

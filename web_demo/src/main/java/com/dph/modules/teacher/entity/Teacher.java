@@ -2,7 +2,7 @@ package com.dph.modules.teacher.entity;
 
 import com.dph.common.cache.annotation.LinkTo;
 import com.dph.common.entity.BaseEntity;
-import com.dph.modules.school.dao.SchoolLocalCacheDao;
+import com.dph.modules.school.dao.SchoolRemoteCacheDao;
 import com.dph.modules.school.entity.School;
 
 public class Teacher extends BaseEntity<Teacher> {
@@ -15,7 +15,7 @@ public class Teacher extends BaseEntity<Teacher> {
 	
 	private String schoolId;
 	
-	@LinkTo(field = "schoolId", dao=SchoolLocalCacheDao.class)
+	@LinkTo(field = "schoolId", dao=SchoolRemoteCacheDao.class)
 	private School school;
 
 	public String getName() {

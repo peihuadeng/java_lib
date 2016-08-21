@@ -63,7 +63,7 @@ public class JsonUtils {
 			T t = mapper.readValue(json, clazz);
 			return t;
 		} catch (IOException e) {
-			logger.debug("fail to convert string to bean, string: " + json, e);
+			logger.debug(String.format("fail to convert string to bean, class:%s, string:%s", clazz, json), e);
 			return null;
 		}
 	}
@@ -96,7 +96,7 @@ public class JsonUtils {
 			T t = mapper.readValue(json, valueTypeRef);
 			return t;
 		} catch (IOException e) {
-			logger.debug("fail to convert string to collection, string: " + json, e);
+			logger.debug(String.format("fail to convert string to collection, type:%s, string:%s", valueTypeRef, json), e);
 			return null;
 		}
 	}
@@ -115,7 +115,7 @@ public class JsonUtils {
 			List<T> list = mapper.readValue(json, type);
 			return list;
 		} catch (Exception e) {
-			logger.debug("fail to convert string to list, string: " + json, e);
+			logger.debug(String.format("fail to convert string to list, class:%s, string:%s", clazz, json), e);
 			return null;
 		}
 	}
@@ -135,7 +135,7 @@ public class JsonUtils {
 			
 			return map;
 		} catch (Exception e) {
-			logger.debug("fail to convert string to map, string: " + json, e);
+			logger.debug(String.format("fail to convert string to map, keyClass:%s, valueClass:%s, string:%s", keyClass, valueClass, json), e);
 			return null;
 		}
 	}

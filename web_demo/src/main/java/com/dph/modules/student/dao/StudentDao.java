@@ -21,6 +21,9 @@ public class StudentDao implements BaseDao<Student> {
 	
 	@Autowired
 	private StudentLocalCacheDao studentLocalCacheDao;
+	
+	@Autowired
+	private StudentRemoteCacheDao studentRemoteCacheDao;
 
 	@Override
 	public int insert(Student student) {
@@ -29,6 +32,8 @@ public class StudentDao implements BaseDao<Student> {
 			return studentMapper.insert(student);
 		case Local:
 			return studentLocalCacheDao.insert(student);
+		case Remote:
+			return studentRemoteCacheDao.insert(student);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -41,6 +46,8 @@ public class StudentDao implements BaseDao<Student> {
 			return studentMapper.insertSelective(student);
 		case Local:
 			return studentLocalCacheDao.insertSelective(student);
+		case Remote:
+			return studentRemoteCacheDao.insertSelective(student);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -53,6 +60,8 @@ public class StudentDao implements BaseDao<Student> {
 			return studentMapper.deleteByPrimaryKey(id);
 		case Local:
 			return studentLocalCacheDao.deleteByPrimaryKey(id);
+		case Remote:
+			return studentRemoteCacheDao.deleteByPrimaryKey(id);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -65,6 +74,8 @@ public class StudentDao implements BaseDao<Student> {
 			return studentMapper.updateByPrimaryKeySelective(student);
 		case Local:
 			return studentLocalCacheDao.updateByPrimaryKeySelective(student);
+		case Remote:
+			return studentRemoteCacheDao.updateByPrimaryKeySelective(student);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -77,6 +88,8 @@ public class StudentDao implements BaseDao<Student> {
 			return studentMapper.updateByPrimaryKey(student);
 		case Local:
 			return studentLocalCacheDao.updateByPrimaryKey(student);
+		case Remote:
+			return studentRemoteCacheDao.updateByPrimaryKey(student);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -89,6 +102,8 @@ public class StudentDao implements BaseDao<Student> {
 			return studentMapper.selectByPrimaryKey(id);
 		case Local:
 			return studentLocalCacheDao.selectByPrimaryKey(id);
+		case Remote:
+			return studentRemoteCacheDao.selectByPrimaryKey(id);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -101,6 +116,8 @@ public class StudentDao implements BaseDao<Student> {
 			return studentMapper.selectSimpleByPrimaryKey(id);
 		case Local:
 			return studentLocalCacheDao.selectSimpleByPrimaryKey(id);
+		case Remote:
+			return studentRemoteCacheDao.selectSimpleByPrimaryKey(id);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -113,6 +130,8 @@ public class StudentDao implements BaseDao<Student> {
 			return studentMapper.select(student);
 		case Local:
 			return studentLocalCacheDao.select(student);
+		case Remote:
+			return studentRemoteCacheDao.select(student);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
@@ -125,6 +144,8 @@ public class StudentDao implements BaseDao<Student> {
 			return studentMapper.selectSimple(student);
 		case Local:
 			return studentLocalCacheDao.selectSimple(student);
+		case Remote:
+			return studentRemoteCacheDao.selectSimple(student);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}
