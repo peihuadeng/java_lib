@@ -1,6 +1,8 @@
 package com.dph.ehcache;
 
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ public class LocalCacheManager {
 
 	@Autowired
 	private CacheManager cacheManager;
+	
+	private Lock lock = new ReentrantLock();
 
 	private Map<String, LocalCache<?>> cacheMap = new ConcurrentHashMap<String, LocalCache<?>>();
 	
@@ -35,18 +39,22 @@ public class LocalCacheManager {
 	 * @return：缓存
 	 */
 	private <T> LocalCache<T> createCache(String name, Class<T> clazz) {
-		Cache cache = new Cache(new CacheConfiguration(name, 1024 * 100)
-				.eternal(false)
-				.timeToIdleSeconds(1800)
-				.timeToLiveSeconds(1800)
-				.overflowToDisk(false)
-				.diskPersistent(false));
-
-		cacheManager.addCache(cache);
-		LocalCache<T> localCache = new LocalCache<T>(cache, clazz);
-		cacheMap.put(name, localCache);
-
-		return localCache;
+		lock.lock();
+		try {
+			Cache cache = new Cache(
+					new CacheConfiguration(name, 1024 * 100)
+					.eternal(false)
+					.timeToIdleSeconds(1800)
+					.timeToLiveSeconds(1800)
+					.overflowToDisk(false)
+					.diskPersistent(false));
+			cacheManager.addCache(cache);
+			LocalCache<T> localCache = new LocalCache<T>(cache, clazz);
+			cacheMap.put(name, localCache);
+			return localCache;
+		} finally {
+			lock.unlock();
+		}
 	}
 	
 	/**
@@ -56,19 +64,23 @@ public class LocalCacheManager {
 	 * @return：缓存
 	 */
 	private <T> LocalCache<T> createPersistentCache(String name, Class<T> clazz) {
-		Cache cache = new Cache(new CacheConfiguration(name, 1024 * 100)
-				.eternal(false)
-				.timeToIdleSeconds(1800)
-				.timeToLiveSeconds(1800)
-				.overflowToDisk(true)
-				.maxElementsOnDisk(1024 * 1024)
-				.diskPersistent(true));
-		
-		cacheManager.addCache(cache);
-		LocalCache<T> localCache = new LocalCache<T>(cache, clazz);
-		cacheMap.put(name, localCache);
-
-		return localCache;
+		lock.lock();
+		try {
+			Cache cache = new Cache(
+					new CacheConfiguration(name, 1024 * 100)
+					.eternal(false)
+					.timeToIdleSeconds(1800)
+					.timeToLiveSeconds(1800)
+					.overflowToDisk(true)
+					.maxElementsOnDisk(1024 * 1024)
+					.diskPersistent(true));
+			cacheManager.addCache(cache);
+			LocalCache<T> localCache = new LocalCache<T>(cache, clazz);
+			cacheMap.put(name, localCache);
+			return localCache;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -89,15 +101,33 @@ public class LocalCacheManager {
 				cacheMap.put(name, localCache);
 			}
 		}
-
+		//创建缓存
 		if (localCache == null && createIfNull == true) {
-			if (persistent) {
-				localCache = createPersistentCache(name, clazz);
-			} else {
-				localCache = createCache(name, clazz);				
+			lock.lock();
+			try {
+				//再次获取
+				localCache = (LocalCache<T>) cacheMap.get(name);
+				if (localCache == null) {
+					Cache cache = cacheManager.getCache(name);
+					if (cache != null) {
+						localCache = new LocalCache<T>(cache, clazz);
+						cacheMap.put(name, localCache);
+					}
+				}
+
+				//再次获取失败，则创建
+				if (localCache == null) {
+					if (persistent) {
+						localCache = createPersistentCache(name, clazz);
+					} else {
+						localCache = createCache(name, clazz);
+					}
+				}
+			} finally {
+				lock.unlock();
 			}
 		}
-
+		
 		return localCache;
 	}
 	
