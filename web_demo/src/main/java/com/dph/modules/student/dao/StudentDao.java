@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dph.common.cache.CacheDao;
 import com.dph.common.cache.CacheModeEnum;
-import com.dph.common.persistence.BaseDao;
 import com.dph.modules.student.entity.Student;
 
 @Component
-public class StudentDao implements BaseDao<Student> {
+public class StudentDao implements CacheDao<Student> {
 	
 	@Value("${cache.mode:Local}")
 	private CacheModeEnum cacheModel;
@@ -146,6 +146,18 @@ public class StudentDao implements BaseDao<Student> {
 			return studentLocalCacheDao.selectSimple(student);
 		case Remote:
 			return studentRemoteCacheDao.selectSimple(student);
+		default:
+			throw new RuntimeException("wrong cache model");
+		}
+	}
+
+	@Override
+	public Student selectByPrimaryKey(String id, int level) {
+		switch(cacheModel) {
+		case Local:
+			return studentLocalCacheDao.selectByPrimaryKey(id, level);
+		case Remote:
+			return studentRemoteCacheDao.selectByPrimaryKey(id, level);
 		default:
 			throw new RuntimeException("wrong cache model");
 		}

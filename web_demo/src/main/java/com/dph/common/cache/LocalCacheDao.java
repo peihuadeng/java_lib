@@ -1,4 +1,4 @@
-package com.dph.common.cache.local;
+package com.dph.common.cache;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -14,24 +14,27 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.dph.common.cache.CacheDao;
 import com.dph.common.cache.annotation.LinkTo;
 import com.dph.common.entity.BaseEntity;
 import com.dph.common.persistence.BaseDao;
 import com.dph.common.utils.StringUtils;
-import com.dph.redis.RedisClient;
+import com.dph.ehcache.LocalCache;
+import com.dph.ehcache.LocalCacheManager;
 import com.dph.system.context.SpringContextHolder;
 
-public abstract class RemoteCacheDao<T extends BaseEntity<T>, Mapper extends BaseDao<T>> implements CacheDao<T> {
+public abstract class LocalCacheDao<T extends BaseEntity<T>, Mapper extends BaseDao<T>> implements CacheDao<T> {
 
-	private final static Logger logger = Logger.getLogger(RemoteCacheDao.class);
+	private final static Logger logger = Logger.getLogger(LocalCacheDao.class);
 
 	@Autowired
 	protected Mapper mapper;
-	private Class<T> entityClass;
 
 	@Value("${cache.level:3}")
 	protected int level;
+
+	@Autowired
+	private LocalCacheManager cacheManager;
+	protected LocalCache<T> localCache;
 
 	private Map<String, Method> getLinkFieldMethodMap = new HashMap<String, Method>();
 	private Map<String, Class<? extends CacheDao<?>>> daoClassMap = new HashMap<String, Class<? extends CacheDao<?>>>();
@@ -42,7 +45,8 @@ public abstract class RemoteCacheDao<T extends BaseEntity<T>, Mapper extends Bas
 	public void init() {
 		boolean success = doInit();
 		if (!success) {
-			entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+			Class<T> entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+			localCache = cacheManager.getAndCreateCache(entityClass);
 
 			Class<?> clazz = entityClass;
 			while (clazz != null) {
@@ -166,8 +170,7 @@ public abstract class RemoteCacheDao<T extends BaseEntity<T>, Mapper extends Bas
 	public int deleteByPrimaryKey(String id) {
 		int result = mapper.deleteByPrimaryKey(id);
 		// remove cache
-		String key = String.format("%s:%s", entityClass.getName(), id);
-		RedisClient.del(key);
+		localCache.remove(id);
 		return result;
 	}
 
@@ -175,17 +178,15 @@ public abstract class RemoteCacheDao<T extends BaseEntity<T>, Mapper extends Bas
 	public int updateByPrimaryKeySelective(T t) {
 		int result = mapper.updateByPrimaryKeySelective(t);
 		// remove cache
-		String key = String.format("%s:%s", entityClass.getName(), t.getId());
-		RedisClient.del(key);
+		localCache.remove(t.getId());
 		return result;
 	}
 
 	@Override
 	public int updateByPrimaryKey(T t) {
 		int result = mapper.updateByPrimaryKey(t);
-		// remove cache
-		String key = String.format("%s:%s", entityClass.getName(), t.getId());
-		RedisClient.del(key);
+		// update cache
+		localCache.putValue(t.getId(), t);
 		return result;
 	}
 
@@ -203,12 +204,11 @@ public abstract class RemoteCacheDao<T extends BaseEntity<T>, Mapper extends Bas
 		}
 		// get from cache, if null, get from db and put into cache
 		T t = null;
-		String key = String.format("%s:%s", entityClass.getName(), id);
-		if (RedisClient.exists(key)) {
-			t = RedisClient.getObjectFromJson(key, entityClass);
+		if (localCache.contains(id)) {
+			t = localCache.getValue(id);
 		} else {// get from db and put into cache
 			t = mapper.selectSimpleByPrimaryKey(id);
-			RedisClient.setObjectToJson(key, t);
+			localCache.putValue(id, t);
 		}
 		// join cache or db
 		loadProperties(t, level);
@@ -223,12 +223,11 @@ public abstract class RemoteCacheDao<T extends BaseEntity<T>, Mapper extends Bas
 		}
 		// get from cache, if null, get from db and put into cache
 		T t = null;
-		String key = String.format("%s:%s", entityClass.getName(), id);
-		if (RedisClient.exists(key)) {
-			t = RedisClient.getObjectFromJson(key, entityClass);
+		if (localCache.contains(id)) {
+			t = localCache.getValue(id);
 		} else {// get from db and put into cache
 			t = mapper.selectSimpleByPrimaryKey(id);
-			RedisClient.setObjectToJson(key, t);
+			localCache.putValue(id, t);
 		}
 
 		return t;
