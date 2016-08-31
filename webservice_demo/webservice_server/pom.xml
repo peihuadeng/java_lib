@@ -49,7 +49,7 @@
 			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -89,12 +89,13 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-bundle-jaxrs</artifactId>
-			<version>${cxf.version}</version><exclusions>
-            <exclusion>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-asm</artifactId>
-            </exclusion>
-        </exclusions>
+			<version>${cxf.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-asm</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
@@ -124,6 +125,17 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.json</include>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -140,6 +152,21 @@
 						<!-- Linux -->
 						<!-- <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath> -->
 					</compilerArguments>
+				</configuration>
+			</plugin>
+			<!-- webservice客户端打包jar: mvn -X -DskipTests -Dmaven.test.skip=true clean package -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<useUniqueVersions>false</useUniqueVersions>
+							<classpathPrefix>lib</classpathPrefix>
+							<mainClass>com.dph.ws.client.WebServiceTestCase</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
