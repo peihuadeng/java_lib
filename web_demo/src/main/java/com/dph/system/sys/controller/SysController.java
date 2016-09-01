@@ -28,8 +28,8 @@ import com.dph.system.shiro.filter.ValidationCodeFilter;
 @RequestMapping("sys")
 public class SysController extends BaseController {
 
-	@Value("${shiro.retryLoginLimit}")
-	private int retryLoginLimit = 5;
+	@Value("${shiro.retryLoginLimit:5}")
+	private int retryLoginLimit;
 
 	// 验证码图片的宽度
 	private int width = 63;

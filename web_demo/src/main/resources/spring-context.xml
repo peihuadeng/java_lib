@@ -9,16 +9,14 @@
                         http://www.springframework.org/schema/tx
 						http://www.springframework.org/schema/tx/spring-tx.xsd">
 
+	<!-- 引入配置文件 -->
+	<context:property-placeholder location="file:${catalina.home}/webapps_conf/web_demo/*.properties" ignore-unresolvable="true" />
+
 	<!-- 使用Annotation自动注册Bean，解决事务失效问题：在主容器中不扫描@Controller注解，在SpringMVC中只扫描@Controller注解。 -->
 	<context:component-scan base-package="com.dph">
 		<context:exclude-filter type="annotation"
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
-
-	<!-- 引入配置文件 -->
-	<!-- 数据库配置参数文件 -->
-	<context:property-placeholder location="classpath:jdbc.properties"
-		ignore-unresolvable="true" />
 
 	<!-- 数据库连接池 -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"

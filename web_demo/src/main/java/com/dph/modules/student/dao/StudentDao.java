@@ -13,7 +13,7 @@ import com.dph.modules.student.entity.Student;
 @Component
 public class StudentDao implements CacheDao<Student> {
 	
-	@Value("${cache.mode:Local}")
+	@Value("${cache.mode:None}")
 	private CacheModeEnum cacheModel;
 	
 	@Autowired

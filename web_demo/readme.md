@@ -34,14 +34,12 @@ sockjs + stomp
 2.修改jdbc.properties配置文件中的相关参数
 3.系统初始化数据中，账号密码为:admin/123456, user/123456
 
-#部分重要的url
-首页页面：http://dev:8080/web_demo/index.jsp
-用户列表（需要登录）：http://dev:8080/web_demo/user
-登出页面：http://dev:8080/web_demo/sys/logout
-druid统计页面：http://dev:8080/web_demo/druid
-websocket测试页面（连接websocket需要登录）：http://dev:8080/web_demo/html/websocket/websocket.html
-stomp测试页面：http://dev:8080/web_demo/websocket/stomp
-
+#部署配置说明
+1.将conf下所有文件拷贝到${catalina.home}/webapps_conf/web_demo/下
+2.修正拷贝的配置文件中的参数
+3.把war包放置在${catalina.home}/webapps
+4.启动tomcat
+5.完成部署
 
 #遗留问题
 1.ehcache持久化：在杀进程后启动tomcat，发现持久化缓存被清空了

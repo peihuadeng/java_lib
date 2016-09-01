@@ -13,7 +13,7 @@ import com.dph.modules.area.entity.Area;
 @Component
 public class AreaDao implements CacheDao<Area> {
 	
-	@Value("${cache.mode:Local}")
+	@Value("${cache.mode:None}")
 	private CacheModeEnum cacheModel;
 	
 	@Autowired
