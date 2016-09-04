@@ -1,6 +1,7 @@
 #restful_demo说明
 1.使用resteasy框架
 2.springMVC+resteasy整合
+3.ContactsTest测试类，通过java+rpc方式远程调用方法
 
 #关键url
 1.页面：http://localhost:8080/restful_demo/contacts
