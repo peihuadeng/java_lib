@@ -1,4 +1,4 @@
-package com.dph.common.cache;
+package com.dph.common.cache.dao;
 
 import com.dph.common.persistence.BaseDao;
 

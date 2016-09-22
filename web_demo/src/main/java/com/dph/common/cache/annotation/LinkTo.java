@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.dph.common.cache.CacheDao;
+import com.dph.common.cache.dao.CacheDao;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
