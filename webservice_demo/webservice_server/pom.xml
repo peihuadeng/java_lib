@@ -154,7 +154,8 @@
 					</compilerArguments>
 				</configuration>
 			</plugin>
-			<!-- webservice客户端打包jar: mvn -X -DskipTests -Dmaven.test.skip=true clean package -->
+			<!-- webservice客户端打包jar: mvn -X -DskipTests -Dmaven.test.skip=true clean 
+				package 复制jar包及lib文件夹，运行java -jar xxx.jar -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -168,6 +169,23 @@
 						</manifest>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<defaultGoal>clean package</defaultGoal>
