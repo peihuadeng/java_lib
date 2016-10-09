@@ -5,17 +5,17 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public abstract class JsonDataPackage {
+public class JsonDataPackage {
 
 	@JsonIgnore
 //	@JSONField(serialize = false, deserialize = false)//阿里巴巴fastjson
-	private Map<String, Object> data;
+	private final Map<String, Object> data;
 
 	public Map<String, Object> getData() {
 		return data;
 	}
 
-	public void setData(Map<String, Object> data) {
+	public JsonDataPackage(Map<String, Object> data) {
 		this.data = data;
 	}
 

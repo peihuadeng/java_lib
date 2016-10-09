@@ -4,26 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
 public class TestQueueService {
 
-	private int totalCount = 0;
-	private Lock totalCountLock;
-	private int totalError = 0;
-	private Lock totalErrorLock;
+	private AtomicInteger totalCount = new AtomicInteger(0);
+	private AtomicInteger totalError = new AtomicInteger(0);
 
 	public TestQueueService() {
-		totalCountLock = new ReentrantLock();
-		totalErrorLock = new ReentrantLock();
 	}
 
-	public void mainTest(int workers, long time) throws InterruptedException {
-		MyQueueService.getInstance().start(5);//启动队列服务
-		
+	public void mainTest(int workers, long seconds) throws InterruptedException {
+		MyQueueService.getInstance().start(5);// 启动队列服务
+
 		long startTime = System.currentTimeMillis();
 		ExecutorService service = Executors.newFixedThreadPool(workers);
 		List<TestRunnable> workerList = new ArrayList<TestRunnable>();
@@ -34,7 +29,7 @@ public class TestQueueService {
 			workerList.add(runnable);
 		}
 
-		Thread.sleep(time);
+		Thread.sleep(seconds * 1000);
 
 		for (TestRunnable runnable : workerList) {
 			runnable.destory();
@@ -44,9 +39,10 @@ public class TestQueueService {
 
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
+		System.out.println(String.format("requests: %d\ntimeout: %d\nconsume time: %d\nRPS: %.3f",
+				totalCount.get(), totalError.get(), totalTime, (double) totalCount.get() * 1000 / totalTime));
 
-		System.out.println(String.format("requests: %d\ntimeout: %d\nconsume time: %d\nRPS: %s", totalCount, totalError, totalTime, (double) totalCount * 1000 / totalTime));
-		MyQueueService.getInstance().stop();//停止队列服务
+		MyQueueService.getInstance().stop();// 停止队列服务
 	}
 
 	/**
@@ -55,12 +51,7 @@ public class TestQueueService {
 	 * @param count
 	 */
 	private void statistics(int count) {
-		totalCountLock.lock();
-		try {
-			this.totalCount += count;
-		} finally {
-			totalCountLock.unlock();
-		}
+		totalCount.addAndGet(count);
 	}
 
 	/**
@@ -69,12 +60,7 @@ public class TestQueueService {
 	 * @param count
 	 */
 	private void statisticsError(int count) {
-		totalErrorLock.lock();
-		try {
-			this.totalError += count;
-		} finally {
-			totalErrorLock.unlock();
-		}
+		totalError.addAndGet(count);
 	}
 
 	/**
@@ -123,7 +109,7 @@ public class TestQueueService {
 
 	public static void main(String[] args) throws InterruptedException {
 		TestQueueService serviceTest = new TestQueueService();
-		serviceTest.mainTest(3, 5000);
+		serviceTest.mainTest(3, 5);
 	}
 
 }
