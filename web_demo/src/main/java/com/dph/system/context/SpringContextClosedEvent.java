@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
+import com.dph.common.utils.HttpClientUtils.HttpClientPool;
+
 @Component
 @Lazy(false)
 public class SpringContextClosedEvent implements ApplicationListener<ContextClosedEvent> {
@@ -17,6 +19,7 @@ public class SpringContextClosedEvent implements ApplicationListener<ContextClos
 	public void onApplicationEvent(ContextClosedEvent event) {
 		if (event.getApplicationContext().getParent() == null) {
 			logger.debug("spring root context closed event");
+			HttpClientPool.destory();
 		} else {
 			logger.debug("spring context closed event");
 		}

@@ -1,6 +1,7 @@
 package com.dph.common.utils;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,15 +9,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class JsonDataPackage {
 
 	@JsonIgnore
-//	@JSONField(serialize = false, deserialize = false)//阿里巴巴fastjson
+	// @JSONField(serialize = false, deserialize = false)//阿里巴巴fastjson
 	private final Map<String, Object> data;
-
-	public Map<String, Object> getData() {
-		return data;
-	}
 
 	public JsonDataPackage(Map<String, Object> data) {
 		this.data = data;
+	}
+
+	public Map<String, Object> getData() {
+		return data;
 	}
 
 	public Boolean getBoolean(String key) {
@@ -149,4 +150,50 @@ public class JsonDataPackage {
 		return null;
 	}
 
+	public <T> List<T> getArray(String key, Class<T> clazz) {
+		Object value = data.get(key);
+		if (value instanceof List) {
+			String json = value.toString();
+			List<T> list = JsonUtils.str2list(json, clazz);
+			return list;
+		}
+
+		return null;
+	}
+
+	public void setArray(String key, List<?> value) {
+		data.put(key, value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public JsonDataPackage getObject(String key) {
+		Object value = data.get(key);
+		if (value instanceof Map) {
+			Map<String, Object> map = (Map<String, Object>) value;
+			JsonDataPackage jsonDataPackage = new JsonDataPackage(map);
+			return jsonDataPackage;
+		}
+
+		return null;
+	}
+
+	public void setObject(String key, Object value) {
+		data.put(key, value);
+	}
+
+	public static void main(String[] args) {
+		String json = "{\"student\": {\"id\":0,\"name\":\"abc\", \"array\":[1,2,3]}}";
+		Map<String, Object> map = JsonUtils.str2map(json, String.class, Object.class);
+		JsonDataPackage dataPckage = new JsonDataPackage(map);
+		JsonDataPackage student = dataPckage.getObject("student");
+		Integer id = student.getInteger("id");
+		String name = student.getString("name");
+		System.out.println(String.format("id:%d, name:%s", id, name));
+
+		List<Integer> array = student.getArray("array", Integer.class);
+		System.out.println(String.format("array: %s", array));
+		for (Integer str : array) {
+			System.out.println(str);
+		}
+	}
 }

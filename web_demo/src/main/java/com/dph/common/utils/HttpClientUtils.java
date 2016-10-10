@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * http工具类，使用连接池控制http连接，设置超时时间及失败重试
+ * http客户端工具类，使用连接池控制http连接，设置超时时间及失败重试
  * 
  * @author peihuadeng
  *
@@ -329,6 +329,7 @@ public class HttpClientUtils {
 				// 设置目标主机的连接数
 				// HttpHost host = new HttpHost("account.dafy.service"); // 针对的主机
 				// connectionManager.setMaxPerRoute(new HttpRoute(host), 50);
+				logger.info("http client pool initialized.");
 			} catch (Exception e) {
 				logger.error("error occurs when creating connection manager.", e);
 				throw new RuntimeException("error occurs when creating connection manager.");
@@ -343,6 +344,7 @@ public class HttpClientUtils {
 				return;
 			}
 			connectionManager.shutdown(); // 关闭连接池
+			logger.info("http client pool closed.");
 		}
 
 		/**
