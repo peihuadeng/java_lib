@@ -5,14 +5,26 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.DeflateDecompressingEntity;
+import org.apache.http.client.entity.GzipCompressingEntity;
+import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -34,6 +46,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,17 +76,71 @@ public class HttpClientUtils {
 		@Override
 		public JsonDataPackage handleEntity(HttpEntity entity) throws IOException {
 			String response = EntityUtils.toString(entity);
-			if (StringUtils.isBlank(response)) {
-				return null;
-			}
-
-			Map<String, Object> responseMap = JsonUtils.str2map(response, String.class, Object.class);
-			if (responseMap == null) {
-				return null;
-			}
-			JsonDataPackage dataPackage = new JsonDataPackage(responseMap);
+			JsonDataPackage dataPackage = JsonDataPackage.fromJson(response);
 
 			return dataPackage;
+		}
+	};
+	// 协议请求拦截器
+	public final static HttpRequestInterceptor requestInterceptor = new HttpRequestInterceptor() {
+		@Override
+		public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+			if ((request instanceof HttpEntityEnclosingRequest) == false) {
+				return;
+			}
+
+			HttpEntityEnclosingRequest enclosingRequest = (HttpEntityEnclosingRequest) request;
+			HttpEntity entity = enclosingRequest.getEntity();
+			if (entity == null) {
+				return;
+			}
+
+			Header[] headers = enclosingRequest.getHeaders("content-encoding");
+			// 根据content-encoding，决定是否对请求报文压缩
+			if (headers == null || headers.length == 0) {
+				return;
+			}
+
+			for (Header header : headers) {
+				HeaderElement[] codecs = header.getElements();
+				for (int i = 0; i < codecs.length; i++) {
+					if (codecs[i].getName().equalsIgnoreCase("gzip")) {
+						enclosingRequest.setEntity(new GzipCompressingEntity(entity));
+						return;
+					} else if (codecs[i].getName().equalsIgnoreCase("deflate")) {
+						byte[] data = EntityUtils.toByteArray(entity);
+						byte[] zipData = ZipUtils.compress(data);
+						StringEntity stringEntity = new StringEntity(new String(zipData), ContentType.getOrDefault(entity));
+						enclosingRequest.setEntity(stringEntity);
+						return;
+					}
+				}
+
+			}
+		}
+	};
+
+	// 协议应答拦截器
+	public final static HttpResponseInterceptor responseInterceptor = new HttpResponseInterceptor() {
+		@Override
+		public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				Header ceheader = entity.getContentEncoding();
+				// 根据返回的content-encoding，决定是否对应答报文解压
+				if (ceheader != null) {
+					HeaderElement[] codecs = ceheader.getElements();
+					for (int i = 0; i < codecs.length; i++) {
+						if (codecs[i].getName().equalsIgnoreCase("gzip")) {
+							response.setEntity(new GzipDecompressingEntity(response.getEntity()));
+							return;
+						} else if (codecs[i].getName().equalsIgnoreCase("deflate")) {
+							response.setEntity(new DeflateDecompressingEntity(response.getEntity()));
+							return;
+						}
+					}
+				}
+			}
 		}
 	};
 
@@ -359,6 +426,8 @@ public class HttpClientUtils {
 					.setRetryHandler(new DefaultHttpRequestRetryHandler(TRY_COUNT, IS_RETRY))// 重试设置
 					.setDefaultRequestConfig(config)// 默认超时配置
 					.setRedirectStrategy(new LaxRedirectStrategy())// 设置重定向机制
+					.addInterceptorLast(requestInterceptor)// 协议请求拦截器
+					.addInterceptorLast(responseInterceptor)// 协议应答拦截器
 					.build();
 			return httpClient;
 		}
@@ -366,37 +435,46 @@ public class HttpClientUtils {
 
 	public static void main(String[] args) {
 		HttpClientUtils.HttpClientPool.getIntance();
-//		// test get
-//		String getUrl = "http://localhost:8080/web_demo/student/view";
-//		Map<String, String> getParams = new HashMap<String, String>();
-//		getParams.put("id", "1");
-//		String getResponse = HttpClientUtils.get(getUrl, getParams);
-//		System.out.println("GET Response: " + getResponse);
-//		// test post + redirect
-//		String postUrl = "http://localhost:8080/web_demo/student/save";
-//		Map<String, String> postParams = new HashMap<String, String>();
-//		postParams.put("name", "test");
-//		postParams.put("age", "1");
-//		postParams.put("teacherId", "1");
-//		String postResponse = HttpClientUtils.post(postUrl, postParams);
-//		System.out.println("POST Response: " + postResponse);
-//
-//		// test post json
-//		String postJsonUrl = "http://localhost:8080/web_demo/student/test";
-//		Student student = new Student();
-//		student.setId("1");
-//		JsonDataPackage postJsonResponse = HttpClientUtils.postJson(postJsonUrl, student);
-//		System.out.println("teacherId: " + postJsonResponse.getInteger("teacherId"));
-//		System.out.println("POST JSON Response: " + postJsonResponse.getData());
-//		// test get json
-//		String getJsonUrl = "http://localhost:8080/web_demo/student/test";
-//		Map<String, String> getJsonParams = new HashMap<String, String>();
-//		getJsonParams.put("id", "1");
-//		Map<String, String> getJsonHeader = new HashMap<String, String>();
-//		getJsonHeader.put("Accept", "application/json");
-//		JsonDataPackage getJsonResponse = HttpClientUtils.get(getJsonUrl, getJsonParams, getJsonHeader, HttpClientUtils.jsonResponseHandler);
-//		System.out.println("teacherId: " + getJsonResponse.getInteger("teacherId"));
-//		System.out.println("POST JSON Response: " + getJsonResponse.getData());
+		// // test get
+		// String getUrl = "http://www.baidu.com";
+		// Map<String, String> getParams = new HashMap<String, String>();
+		// getParams.put("id", "1");
+		// String getResponse = HttpClientUtils.get(getUrl, getParams);
+		// System.out.println("GET Response: " + getResponse);
+		// // test post + redirect
+		// String postUrl = "http://localhost:8080/web_demo/student/save";
+		// Map<String, String> postParams = new HashMap<String, String>();
+		// postParams.put("name", "test");
+		// postParams.put("age", "1");
+		// postParams.put("teacherId", "1");
+		// String postResponse = HttpClientUtils.post(postUrl, postParams);
+		// System.out.println("POST Response: " + postResponse);
+		//
+		// // test post json
+		// String postJsonUrl = "http://localhost:8080/web_demo/student/test";
+		// Student student = new Student();
+		// student.setId("1");
+		// JsonDataPackage postJsonResponse = HttpClientUtils.postJson(postJsonUrl, student);
+		// System.out.println("teacherId: " + postJsonResponse.getInteger("teacherId"));
+		// System.out.println("POST JSON Response: " + postJsonResponse.getData());
+		// // test get json
+		// String getJsonUrl = "http://localhost:8080/web_demo/student/test";
+		// Map<String, String> getJsonParams = new HashMap<String, String>();
+		// getJsonParams.put("id", "1");
+		// Map<String, String> getJsonHeader = new HashMap<String, String>();
+		// getJsonHeader.put("Accept", "application/json");
+		// JsonDataPackage getJsonResponse = HttpClientUtils.get(getJsonUrl, getJsonParams, getJsonHeader, HttpClientUtils.jsonResponseHandler);
+		// System.out.println("teacherId: " + getJsonResponse.getInteger("teacherId"));
+		// System.out.println("POST JSON Response: " + getJsonResponse.getData());
+
+		// test post json - auto zip
+		String postJsonUrl = "http://www.baidu.com";
+		Map<String, String> header = new HashMap<String, String>();
+		header.put("Content-Encoding", "deflate");
+		Map<String, String> json = new HashMap<String, String>();
+		json.put("a", "1");
+		JsonDataPackage postJsonResponse = HttpClientUtils.postJson(postJsonUrl, json, header);
+		System.out.println("POST JSON Response: " + postJsonResponse.toString());
 		HttpClientUtils.HttpClientPool.destory();
 	}
 

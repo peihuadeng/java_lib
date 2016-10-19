@@ -18,10 +18,10 @@ public abstract class QueueServiceRunnable<T> implements Runnable {
 
 	private final Logger logger = LoggerFactory.getLogger(QueueServiceRunnable.class);
 
-	private volatile RunningStatus status;// 工作线程内置状态:RUNNING, STOPPING, WAITING, STOPPED
-	private final Lock lock;// 内置锁对象
-	private final WaitLock waitLock;// 内置锁对象
-	private final QueueService<T, ? extends QueueServiceRunnable<T>> queueService;
+	protected volatile RunningStatus status;// 工作线程内置状态:RUNNING, STOPPING, WAITING, STOPPED
+	protected final Lock lock;// 内置锁对象
+	protected final WaitLock waitLock;// 内置锁对象
+	protected final QueueService<T, ? extends QueueServiceRunnable<T>> queueService;
 	protected final long waitTime;// 等待时间，单位：毫秒。默认：5000
 
 	/**
@@ -61,11 +61,11 @@ public abstract class QueueServiceRunnable<T> implements Runnable {
 	 * 停止工作线程，不保证立即停止
 	 */
 	protected void destory() {
-		logger.info("queue service runnable stopping...");
+		logger.info(String.format("%s stopping...", this.getClass().getSimpleName()));
 		lock.lock();
 		try {
 			if (this.status != RunningStatus.RUNNING && this.status != RunningStatus.WAITING) {
-				logger.warn("queue service runnable has stopped.");
+				logger.warn(String.format("%s has stopped.", this.getClass().getSimpleName()));
 				return;
 			}
 			this.status = RunningStatus.STOPPING;
@@ -85,7 +85,7 @@ public abstract class QueueServiceRunnable<T> implements Runnable {
 	 */
 	@Override
 	public void run() {
-		logger.info("queue service runnable started.");
+		logger.info(String.format("%s started.", this.getClass().getSimpleName()));
 		// 状态修改为正在运行
 		lock.lock();
 		try {
@@ -102,7 +102,7 @@ public abstract class QueueServiceRunnable<T> implements Runnable {
 		} finally {
 			lock.unlock();
 		}
-		logger.info("queue service runnable stopped.");
+		logger.info(String.format("%s stopped.", this.getClass().getSimpleName()));
 	}
 
 	protected void executeLoop() {
@@ -128,7 +128,7 @@ public abstract class QueueServiceRunnable<T> implements Runnable {
 					execute(t);
 				}
 			} catch (Exception e) {
-				logger.warn("error occurs when waitting", e);
+				logger.warn(String.format("[%s] error occurs when running", this.getClass().getSimpleName()), e);
 				lock.lock();
 				try {
 					if (status == RunningStatus.WAITING) {

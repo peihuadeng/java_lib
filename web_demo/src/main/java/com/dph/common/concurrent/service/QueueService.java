@@ -31,24 +31,32 @@ import com.dph.common.concurrent.lock.WaitLock;
 public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 
 	private final static Logger logger = LoggerFactory.getLogger(QueueService.class);
-	protected final static Lock lock = new ReentrantLock();// 队列服务锁对象
-	private Queue<T> queue;// 队列
+	protected final Lock lock;// 队列服务锁对象
+	private final Queue<T> queue;// 队列
 	private volatile RunningStatus status;// 队列服务状态:STARTING, STARTED, STOPPING, STOPPED
 	private int workerIndex;// 工作线程当前索引
 	private int workers;// 工作线程总数
 	private ExecutorService executorService;// 线程池
-	private List<R> workerList;// 工作线程数组
-	private List<WaitLock> lockList;// 工作线程内置锁对象数据
-	private List<Future<?>> futureList;// 工作线程执行结果数组
+	private final List<R> workerList;// 工作线程数组
+	private final List<WaitLock> lockList;// 工作线程内置锁对象数据
+	private final List<Future<?>> futureList;// 工作线程执行结果数组
 
 	// private static QueueService instance = null;// 单例引用
+	// private final static Lock staticLock = new ReentrantLock();//单例控制锁
+	//
+	// /**
+	// * 私有化构造
+	// */
+	// private QueueService() {
+	// }
+	//
 	// /**
 	// * 获取单例，线程安全操作
 	// *
 	// * @return
 	// */
 	// public static QueueService getInstance() {
-	// lock.lock();
+	// staticLock.lock();
 	// try {
 	// if (instance == null) {
 	// instance = new QueueService();
@@ -56,7 +64,7 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 	//
 	// return instance;
 	// } finally {
-	// lock.unlock();
+	// staticLock.unlock();
 	// }
 	// }
 
@@ -64,6 +72,7 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 	 * 初始化
 	 */
 	public QueueService() {
+		lock = new ReentrantLock();
 		queue = new ConcurrentLinkedQueue<T>();// 初始化队列为并发队列对象
 		workerList = new ArrayList<R>();// 初始化工作线程数组
 		lockList = new ArrayList<WaitLock>();// 初始化工作线程内置锁对象数组
@@ -77,30 +86,30 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 	 * @param workers
 	 */
 	public void start(int workers) {
-		logger.info("queue service starting...");
+		logger.info(String.format("%s starting...", this.getClass().getSimpleName()));
 		lock.lock();
 		try {
 			// 状态判断：状态必须为停止才能启动
 			if (this.status != RunningStatus.STOPPED) {
-				logger.warn("queue service has started");
+				logger.warn(String.format("%s has started", this.getClass().getSimpleName()));
 				return;
 			}
 			this.status = RunningStatus.STARTING;
 			this.workers = workers;
 			this.workerIndex = 0;
 			// 创建线程池
-			this.executorService = Executors.newFixedThreadPool(workers, new ThreadFactory() {
+			this.executorService = Executors.newFixedThreadPool(this.workers, new ThreadFactory() {
 				private final AtomicInteger index = new AtomicInteger(0);
 
 				@Override
 				public Thread newThread(Runnable r) {
 					// 线程名称为QueueService_${index}
-					return new Thread(r, "QueueService_" + index.getAndIncrement());
+					return new Thread(r, QueueService.this.getClass().getSimpleName() + "_" + index.getAndIncrement());
 				}
 
 			});
 			// 创建锁对象、工作线程、工作线程执行结果，并把工作线程提交给线程池执行
-			for (int i = 0; i < workers; i++) {
+			for (int i = 0; i < this.workers; i++) {
 				WaitLock waitLock = new WaitLock();
 				lockList.add(waitLock);
 				R runnable = newRunnable(waitLock);
@@ -113,7 +122,7 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 		} finally {
 			lock.unlock();
 		}
-		logger.info("queue service started.");
+		logger.info(String.format("%s started, %d workers working.", this.getClass().getSimpleName(), this.workers));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -123,8 +132,8 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 			R runnable = runnableClass.getConstructor(WaitLock.class, QueueService.class).newInstance(waitLock, this);
 			return runnable;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			logger.error("fail to new runnable", e);
-			throw new RuntimeException("fail to new runnable");
+			logger.error(String.format("fail to new runnable[%s]", runnableClass.getSimpleName()), e);
+			throw new RuntimeException(String.format("fail to new runnable[%s]", runnableClass.getSimpleName()));
 		}
 	}
 
@@ -132,28 +141,46 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 	 * 停止队列服务
 	 */
 	public void stop() {
-		logger.info("queue service stopping...");
+		logger.info(String.format("%s stopping...", this.getClass().getSimpleName()));
+		int workersClone = 0;
+		List<R> workerListClone = null;
+		List<Future<?>> futureListClone = null;
 		lock.lock();
 		try {
 			// 判断状态：状态必须为已启动才能停止
 			if (this.status != RunningStatus.STARTED) {
-				logger.warn("queue service has stopped");
+				logger.warn(String.format("%s has stopped", this.getClass().getSimpleName()));
 				return;
 			}
 			this.status = RunningStatus.STOPPING;
-			// 设置停止标识
-			for (int i = 0; i < workers; i++) {
-				R runnable = workerList.get(i);
-				runnable.destory();
+			// 克隆，防止遍历时被其他线程修改
+			workersClone = workers;
+			workerListClone = new ArrayList<R>(workerList);
+			futureListClone = new ArrayList<Future<?>>(futureList);
+		} finally {
+			lock.unlock();
+		}
+		// 以下操作不加锁，防止死锁发生
+		// 设置停止标识
+		for (int i = 0; i < workersClone; i++) {
+			R runnable = workerListClone.get(i);
+			runnable.destory();
+		}
+		// 等待停止
+		for (int i = 0; i < workersClone; i++) {
+			try {
+				Future<?> future = futureListClone.get(i);
+				future.get();
+			} catch (Exception e) {
+				logger.warn(String.format("fail to stop %s, index:%s", workerListClone.get(i).getClass().getSimpleName(), i), e);
 			}
-			// 等待停止
-			for (int i = 0; i < workers; i++) {
-				try {
-					Future<?> future = futureList.get(i);
-					future.get();
-				} catch (Exception e) {
-					logger.warn("fail to stop queue service runnable", e);
-				}
+		}
+
+		lock.lock();
+		try {
+			// 判断状态是否被其他线程修改
+			if (this.status != RunningStatus.STOPPING) {
+				logger.warn(String.format("%s status was changed by other when stopping.", this.getClass().getSimpleName()));
 			}
 			// 关闭线程池
 			executorService.shutdown();
@@ -166,7 +193,7 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 		} finally {
 			lock.unlock();
 		}
-		logger.info("queue service stopped.");
+		logger.info(String.format("%s stopped.", this.getClass().getSimpleName()));
 	}
 
 	/**

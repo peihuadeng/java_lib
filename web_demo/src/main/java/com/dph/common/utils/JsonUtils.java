@@ -7,14 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * json处理工具
@@ -24,14 +22,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JsonUtils {
 
-	private final static Logger logger = LoggerFactory.getLogger(JsonUtils.class);
-
 	public static ObjectMapper getObjectMapper() {
-		return new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
+		return mapper;
 	}
 
 	/**
 	 * 将bean转化成json字符串
+	 * 
 	 * @param obj
 	 * @return
 	 */
@@ -46,13 +46,13 @@ public class JsonUtils {
 			writer.close();
 			return json;
 		} catch (IOException e) {
-			logger.warn("fail to convert bean to string, class: " + (obj == null ? obj : obj.getClass().getName()), e);
-			return null;
+			throw new RuntimeException("fail to convert bean to string, class: " + (obj == null ? obj : obj.getClass().getName()), e);
 		}
 	}
 
 	/**
 	 * 将json字符串转化成目标类型对象
+	 * 
 	 * @param json
 	 * @param clazz
 	 * @return
@@ -63,13 +63,13 @@ public class JsonUtils {
 			T t = mapper.readValue(json, clazz);
 			return t;
 		} catch (IOException e) {
-			logger.warn(String.format("fail to convert string to bean, class:%s, string:%s", clazz, json), e);
-			return null;
+			throw new RuntimeException(String.format("fail to convert string to bean, class:%s, string:%s", clazz, json), e);
 		}
 	}
 
 	/**
 	 * 将json字符串转换成object
+	 * 
 	 * @param json
 	 * @param obj
 	 */
@@ -79,13 +79,13 @@ public class JsonUtils {
 			Object obj = mapper.readValue(json, Object.class);
 			return obj;
 		} catch (IOException e) {
-			logger.warn("fail to convert string to object, string: " + json, e);
-			return null;
+			throw new RuntimeException("fail to convert string to object, string: " + json, e);
 		}
 	}
 
 	/**
 	 * 将json字符串转化成collection
+	 * 
 	 * @param json
 	 * @param valueTypeRef
 	 * @return
@@ -96,13 +96,13 @@ public class JsonUtils {
 			T t = mapper.readValue(json, valueTypeRef);
 			return t;
 		} catch (IOException e) {
-			logger.warn(String.format("fail to convert string to collection, type:%s, string:%s", valueTypeRef, json), e);
-			return null;
+			throw new RuntimeException(String.format("fail to convert string to collection, type:%s, string:%s", valueTypeRef, json), e);
 		}
 	}
 
 	/**
 	 * 将json字符串转化成list
+	 * 
 	 * @param json
 	 * @param clazz
 	 * @return
@@ -115,13 +115,13 @@ public class JsonUtils {
 			List<T> list = mapper.readValue(json, type);
 			return list;
 		} catch (Exception e) {
-			logger.warn(String.format("fail to convert string to list, class:%s, string:%s", clazz, json), e);
-			return null;
+			throw new RuntimeException(String.format("fail to convert string to list, class:%s, string:%s", clazz, json), e);
 		}
 	}
 
 	/**
 	 * 将json字符串转化成map
+	 * 
 	 * @param json
 	 * @param keyClass
 	 * @param valueClass
@@ -132,12 +132,10 @@ public class JsonUtils {
 			ObjectMapper mapper = getObjectMapper();
 			JavaType type = mapper.getTypeFactory().constructMapType(HashMap.class, keyClass, valueClass);
 			Map<KT, VT> map = mapper.readValue(json, type);
-			
+
 			return map;
 		} catch (Exception e) {
-			logger.warn(String.format("fail to convert string to map, keyClass:%s, valueClass:%s, string:%s", keyClass, valueClass, json), e);
-			return null;
+			throw new RuntimeException(String.format("fail to convert string to map, keyClass:%s, valueClass:%s, string:%s", keyClass, valueClass, json), e);
 		}
 	}
 }
-

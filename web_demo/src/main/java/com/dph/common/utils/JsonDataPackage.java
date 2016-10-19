@@ -20,6 +20,26 @@ public class JsonDataPackage {
 		return data;
 	}
 
+	public static JsonDataPackage fromJson(String json) {
+		if (StringUtils.isBlank(json)) {
+			return null;
+		}
+
+		Map<String, Object> map = JsonUtils.str2map(json, String.class, Object.class);
+		if (map == null) {
+			return null;
+		}
+
+		JsonDataPackage dataPackage = new JsonDataPackage(map);
+		return dataPackage;
+	}
+
+	@Override
+	public String toString() {
+		String json = JsonUtils.bean2Str(data);
+		return json;
+	}
+
 	public Boolean getBoolean(String key) {
 		Object value = data.get(key);
 		if (value instanceof Boolean) {
@@ -154,8 +174,11 @@ public class JsonDataPackage {
 		Object value = data.get(key);
 		if (value instanceof List) {
 			String json = value.toString();
-			List<T> list = JsonUtils.str2list(json, clazz);
-			return list;
+			try {
+				List<T> list = JsonUtils.str2list(json, clazz);
+				return list;
+			} catch (Exception e) {
+			}
 		}
 
 		return null;
@@ -183,9 +206,8 @@ public class JsonDataPackage {
 
 	public static void main(String[] args) {
 		String json = "{\"student\": {\"id\":0,\"name\":\"abc\", \"array\":[1,2,3]}}";
-		Map<String, Object> map = JsonUtils.str2map(json, String.class, Object.class);
-		JsonDataPackage dataPckage = new JsonDataPackage(map);
-		JsonDataPackage student = dataPckage.getObject("student");
+		JsonDataPackage dataPackage = JsonDataPackage.fromJson(json);
+		JsonDataPackage student = dataPackage.getObject("student");
 		Integer id = student.getInteger("id");
 		String name = student.getString("name");
 		System.out.println(String.format("id:%d, name:%s", id, name));
@@ -195,5 +217,6 @@ public class JsonDataPackage {
 		for (Integer str : array) {
 			System.out.println(str);
 		}
+		System.out.println(dataPackage);
 	}
 }
