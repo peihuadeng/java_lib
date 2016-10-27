@@ -7,10 +7,13 @@
 ##停止命令
 * java -jar process_demo.jar stop
 
+##重启命令
+* java -jar process_demo.jar restart
+
 ##原理
 ###执行启动命令
 1. 获取pid文件内记录的进程号pid，并执行jps -l命令判断进程是否正在运行。如果检测到进程正在运行则提示并退出，否则执行步骤2
-2. 执行启动目标java进程命令：${JAVA_HOME}/bin/java -classpath ${classPath} ${className} ${serviceClassName} ${PARAM}...
+2. 执行启动目标java进程命令：${JAVA_HOME}/bin/java -classpath ${classPath} ${className} ${serviceClassName}
 3. 获取目标java进程输出流的输出内容，判断是否启动成功，并提示。如果启动成功，则从输出内容中获取进程号pid并执行步骤4
 4. 保存进程号pid到pid文件内。
 
