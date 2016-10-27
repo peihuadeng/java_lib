@@ -7,6 +7,9 @@ package com.dph.processDemo.common.util;
 import com.dph.processDemo.common.cache.constEnum.OSType;
 
 /**
+ * 
+ * 操作系统工具
+ * 
  * @author peihuadeng
  *
  */

@@ -1,12 +1,17 @@
 package com.dph.processDemo;
 
 import com.dph.processDemo.common.application.BaseApplication;
+import com.dph.processDemo.system.service.DemoService;
 
 /**
  * 程序入口
  *
  */
 public class Application extends BaseApplication {
+
+	public Application() {
+		super(DemoService.class);
+	}
 
 	public static void main(String[] args) {
 		if (args.length != 1) {
@@ -27,7 +32,7 @@ public class Application extends BaseApplication {
 			application.start();
 			break;
 		default:
-			System.err.println(String.format("Incorrect command[%s]. please input start|stop|restart.", args[0].toLowerCase()));
+			System.err.println(String.format("Incorrect command[%s]. please input start|stop|restart.", args[0]));
 			break;
 		}
 	}

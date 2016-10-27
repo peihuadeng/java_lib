@@ -21,6 +21,8 @@ import com.dph.processDemo.common.service.BaseService;
 import com.dph.processDemo.common.util.OSUtils;
 
 /**
+ * 基础应用程序：启动或停止服务进程
+ * 
  * @author peihuadeng
  *
  */
@@ -33,8 +35,15 @@ public abstract class BaseApplication {
 	private final static String pidFileName = "pid.conf";
 	private final File pidFile;// pid文件对象
 	private final byte osType;// 操作系统类型
+	private final Class<? extends BaseService> serviceClass;// 服务类类型
 
-	public BaseApplication() {
+	/**
+	 * 构造函数，必须传入服务类类型
+	 * 
+	 * @param serviceClass
+	 */
+	public BaseApplication(Class<? extends BaseService> serviceClass) {
+		this.serviceClass = serviceClass;
 		// 判断bin目录是否存在，不存在则创建
 		File binDir = new File(binPath);
 		if (binDir.exists() == false) {
@@ -48,7 +57,7 @@ public abstract class BaseApplication {
 	/**
 	 * 新建并保存pid文件
 	 */
-	private void savePid(int pid) {
+	private final void savePid(int pid) {
 		BufferedWriter writer = null;
 		try {
 			pidFile.createNewFile();
@@ -71,7 +80,7 @@ public abstract class BaseApplication {
 	/**
 	 * 移除pid文件
 	 */
-	private void removePid() {
+	private final void removePid() {
 		if (pidFile != null && pidFile.exists() == true) {
 			pidFile.delete();
 		}
@@ -82,7 +91,7 @@ public abstract class BaseApplication {
 	 * 
 	 * @return
 	 */
-	private int getPid() {
+	private final int getPid() {
 		int pid = -1;
 		// 判断pid文件是否存在
 		if (pidFile.exists() == false) {
@@ -117,7 +126,7 @@ public abstract class BaseApplication {
 	 *            进程号
 	 * @return true：正在运行，false：已停止
 	 */
-	private boolean isRunning(int pid) {
+	private final boolean isRunning(int pid) {
 		boolean status = false;
 		// 构造命令: jps -l
 		List<String> commandList = new ArrayList<String>();
@@ -157,9 +166,9 @@ public abstract class BaseApplication {
 	}
 
 	/**
-	 * 启动进程，并保存pid文件
+	 * 启动服务进程，并保存pid文件
 	 */
-	public void start() {
+	public final void start() {
 		System.out.println("Application starting...");
 		// 首先检查pid.conf文件，检测进程是否已启动
 		int pid = getPid();
@@ -178,6 +187,7 @@ public abstract class BaseApplication {
 		commandList.add("-classpath");
 		commandList.add(classPath);
 		commandList.add(BaseService.class.getName());
+		commandList.add(serviceClass.getName());
 
 		ProcessBuilder builder = new ProcessBuilder(commandList);
 		builder.redirectErrorStream(true);// 错误输出流重定向到标准输出流
@@ -235,7 +245,7 @@ public abstract class BaseApplication {
 	 * 
 	 * @param pid
 	 */
-	private void stopInLinux(int pid) {
+	private final void stopInLinux(int pid) {
 		// 执行 kill -15 ${pid}命令
 		List<String> stopCommand = new ArrayList<String>();
 		stopCommand.add("kill");
@@ -254,7 +264,7 @@ public abstract class BaseApplication {
 	 * 
 	 * @param pid
 	 */
-	private void killInLinux(int pid) {
+	private final void killInLinux(int pid) {
 		// 杀进程:执行 kill -9 ${pid}命令
 		List<String> killCommand = new ArrayList<String>();
 		killCommand.add("kill");
@@ -273,7 +283,7 @@ public abstract class BaseApplication {
 	 * 
 	 * @param pid
 	 */
-	private void killInWin(int pid) {
+	private final void killInWin(int pid) {
 		// 杀进程:执行 taskkill /f /pid ${pid}命令
 		List<String> killCommand = new ArrayList<String>();
 		killCommand.add("taskkill");
@@ -295,7 +305,7 @@ public abstract class BaseApplication {
 	 * @param pid
 	 * @return
 	 */
-	private boolean continuityCheck(int pid) {
+	private final boolean continuityCheck(int pid) {
 		// 循环检测进程是否停止
 		long maxTime = 10l * 1000;// 持续时间10s
 		long startTime = System.currentTimeMillis();
@@ -318,9 +328,9 @@ public abstract class BaseApplication {
 	}
 
 	/**
-	 * 利用pid，实现停止程序
+	 * 利用pid文件，实现停止程服务进程
 	 */
-	public void stop() {
+	public final void stop() {
 		System.out.println("Application stopping...");
 		// 获取pid，并判断进程是否已停止
 		int pid = getPid();
