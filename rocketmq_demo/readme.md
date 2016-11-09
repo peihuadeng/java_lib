@@ -1,5 +1,5 @@
 #RocketMQ官方安装教程
-[quick-start](https://github.com/alibaba/RocketMQ/wiki/quick-start quick-start)
+[quick-start](https://github.com/alibaba/RocketMQ/wiki/quick-start)
 
 #相关命令
 ##启动name server
