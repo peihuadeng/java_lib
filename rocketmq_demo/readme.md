@@ -1,3 +1,8 @@
+#rocketmq_demo
+* rocketmq生产者抽象化
+* rocketmq生产者demo
+* rocketmq消费者demo
+
 #RocketMQ官方安装教程
 [quick-start](https://github.com/alibaba/RocketMQ/wiki/quick-start)
 
