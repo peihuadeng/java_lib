@@ -32,7 +32,7 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 
 	private final static Logger logger = LoggerFactory.getLogger(QueueService.class);
 	protected final Lock lock;// 队列服务锁对象
-	private final Queue<T> queue;// 队列
+	protected final Queue<T> queue;// 队列
 	private volatile RunningStatus status;// 队列服务状态:STARTING, STARTED, STOPPING, STOPPED
 	private int workerIndex;// 工作线程当前索引
 	private int workers;// 工作线程总数
@@ -97,6 +97,7 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 			this.status = RunningStatus.STARTING;
 			this.workers = workers;
 			this.workerIndex = 0;
+			this.onStart();
 			// 创建线程池
 			this.executorService = Executors.newFixedThreadPool(this.workers, new ThreadFactory() {
 				private final AtomicInteger index = new AtomicInteger(0);
@@ -123,6 +124,9 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 			lock.unlock();
 		}
 		logger.info(String.format("%s started, %d workers working.", this.getClass().getSimpleName(), this.workers));
+	}
+
+	protected void onStart() {
 	}
 
 	@SuppressWarnings("unchecked")
@@ -189,11 +193,15 @@ public abstract class QueueService<T, R extends QueueServiceRunnable<T>> {
 			workerList.clear();
 			lockList.clear();
 			futureList.clear();
+			this.onStop();
 			this.status = RunningStatus.STOPPED;
 		} finally {
 			lock.unlock();
 		}
 		logger.info(String.format("%s stopped.", this.getClass().getSimpleName()));
+	}
+
+	protected void onStop() {
 	}
 
 	/**

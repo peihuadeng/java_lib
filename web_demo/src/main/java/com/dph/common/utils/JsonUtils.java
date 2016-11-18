@@ -1,5 +1,6 @@
 package com.dph.common.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -40,15 +41,75 @@ public class JsonUtils {
 	public static String bean2Str(Object obj) {
 		ObjectMapper mapper = getObjectMapper();
 		StringWriter writer = new StringWriter();
+		JsonGenerator gen = null;
 		try {
-			JsonGenerator gen = new JsonFactory().createGenerator(writer);
+			gen = new JsonFactory().createGenerator(writer);
 			mapper.writeValue(gen, obj);
-			gen.close();
 			String json = writer.toString();
-			writer.close();
+
 			return json;
 		} catch (IOException e) {
 			throw new RuntimeException("fail to convert bean to string, class: " + (obj == null ? obj : obj.getClass().getName()), e);
+		} finally {
+			if (gen != null) {
+				try {
+					gen.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * 将bean序列化为str：可与@JsonTypeInfo注解配合使用，实现多态序列化
+	 * 
+	 * @param valueTypeRef
+	 * @param t
+	 * @return
+	 */
+	public static <T> String bean2Str(TypeReference<T> valueTypeRef, T t) {
+		ObjectMapper mapper = getObjectMapper();
+		StringWriter writer = new StringWriter();
+		JsonGenerator gen = null;
+		try {
+			gen = new JsonFactory().createGenerator(writer);
+			mapper.writerFor(valueTypeRef).writeValue(gen, t);
+			String json = writer.toString();
+
+			return json;
+		} catch (IOException e) {
+			throw new RuntimeException(String.format("fail to convert bean to string, type:%s, object class:%s", valueTypeRef, t == null ? t : t.getClass().getName()), e);
+		} finally {
+			if (gen != null) {
+				try {
+					gen.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * 将bean序列化到文件：可与@JsonTypeInfo注解配合使用，实现多态序列化
+	 * 
+	 * @param valueTypeRef
+	 * @param t
+	 * @param file
+	 */
+	public static <T> void bean2File(TypeReference<T> valueTypeRef, T t, File file) {
+		ObjectMapper mapper = getObjectMapper();
+		try {
+			File path = file.getParentFile();
+			if (path != null && path.exists() == false) {
+				path.mkdirs();
+			}
+
+			mapper.writerFor(valueTypeRef).writeValue(file, t);
+		} catch (IOException e) {
+			throw new RuntimeException(String.format("fail to convert bean to file, type: %s, object class: %s, file: %s", //
+					valueTypeRef, t == null ? t : t.getClass().getName(), file), e);
 		}
 	}
 
@@ -99,6 +160,25 @@ public class JsonUtils {
 			return t;
 		} catch (IOException e) {
 			throw new RuntimeException(String.format("fail to convert string to collection, type:%s, string:%s", valueTypeRef, json), e);
+		}
+	}
+
+	/**
+	 * 将文件内容序列化成collection
+	 * 
+	 * @param file
+	 * @param valueTypeRef
+	 * @return
+	 */
+	public static <T> T file2Collection(File file, TypeReference<T> valueTypeRef) {
+		try {
+			ObjectMapper mapper = getObjectMapper();
+			T t = mapper.readValue(file, valueTypeRef);
+
+			return t;
+		} catch (IOException e) {
+			throw new RuntimeException(String.format("fail to convert file to collection, type:%s, file:%s", //
+					valueTypeRef, file), e);
 		}
 	}
 
