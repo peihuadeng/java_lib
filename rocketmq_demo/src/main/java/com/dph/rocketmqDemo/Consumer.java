@@ -19,6 +19,7 @@ public class Consumer {
 	public static void main(String[] args) {
 		DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("Consumer");// 消费者组名
 		consumer.setNamesrvAddr(ROCKETMQ_ADDR);
+		consumer.setInstanceName("consumer_1");
 		try {
 			consumer.subscribe("testTopic", "push");
 			consumer.setMessageModel(MessageModel.BROADCASTING);// 广播模式：组内所有消费者都能收到

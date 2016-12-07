@@ -26,7 +26,7 @@ public class FileListener extends FileAlterationListenerAdaptor {
 	 */
 	@Override
 	public void onFileCreate(File file) {
-		log.info("[新建]:" + file.getAbsolutePath());
+		log.info("[onFileCreate]:" + file.getAbsolutePath());
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class FileListener extends FileAlterationListenerAdaptor {
 	 */
 	@Override
 	public void onFileChange(File file) {
-		log.info("[修改]:" + file.getAbsolutePath());
+		log.info("[onFileChange]:" + file.getAbsolutePath());
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class FileListener extends FileAlterationListenerAdaptor {
 	 */
 	@Override
 	public void onFileDelete(File file) {
-		log.info("[删除]:" + file.getAbsolutePath());
+		log.info("[onFileDelete]:" + file.getAbsolutePath());
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class FileListener extends FileAlterationListenerAdaptor {
 	 */
 	@Override
 	public void onDirectoryCreate(File directory) {
-		log.info("[新建]:" + directory.getAbsolutePath());
+		log.info("[onDirectoryCreate]:" + directory.getAbsolutePath());
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class FileListener extends FileAlterationListenerAdaptor {
 	 */
 	@Override
 	public void onDirectoryChange(File directory) {
-		log.info("[修改]:" + directory.getAbsolutePath());
+		log.info("[onDirectoryChange]:" + directory.getAbsolutePath());
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class FileListener extends FileAlterationListenerAdaptor {
 	 */
 	@Override
 	public void onDirectoryDelete(File directory) {
-		log.info("[删除]:" + directory.getAbsolutePath());
+		log.info("[onDirectoryDelete]:" + directory.getAbsolutePath());
 	}
 
 	@Override
