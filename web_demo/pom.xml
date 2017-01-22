@@ -370,7 +370,7 @@
 					<compilerArguments>
 						<verbose />
 						<!-- Windows -->
-						<bootclasspath>${java.home}\lib\rt.jar;${java.home}\lib\jce.jar</bootclasspath>
+						<!-- <bootclasspath>${java.home}\lib\rt.jar;${java.home}\lib\jce.jar</bootclasspath> -->
 						<!-- Linux -->
 						<!-- <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath> -->
 					</compilerArguments>
