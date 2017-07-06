@@ -1,83 +1,85 @@
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-                       http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"
-	version="3.1">
-	<display-name>web_demo</display-name>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+            http://java.sun.com/xml/ns/javaee
+            http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+    <display-name>web_demo</display-name>
 
-	<!-- session配置 -->
-	<session-config>
-		<session-timeout>30</session-timeout>
-	</session-config>
+    <!-- session配置 -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
 
-	<welcome-file-list>
-		<welcome-file>/index.jsp</welcome-file>
-	</welcome-file-list>
+    <welcome-file-list>
+        <welcome-file>/index.jsp</welcome-file>
+    </welcome-file-list>
 
-	<!-- 出错页面定义 -->
-	<error-page>
-		<exception-type>java.lang.Throwable</exception-type>
-		<location>/WEB-INF/jsp/error/500.jsp</location>
-	</error-page>
-	<error-page>
-		<error-code>500</error-code>
-		<location>/WEB-INF/jsp/error/500.jsp</location>
-	</error-page>
-	<error-page>
-		<error-code>404</error-code>
-		<location>/WEB-INF/jsp/error/404.jsp</location>
-	</error-page>
+    <!-- 出错页面定义 -->
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/WEB-INF/jsp/error/500.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/WEB-INF/jsp/error/500.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/jsp/error/404.jsp</location>
+    </error-page>
 
-	<listener>
-		<listener-class>org.springframework.web.util.IntrospectorCleanupListener
-		</listener-class>
-	</listener>
-	
-	<!-- log4j -->
-	<context-param>
-		<param-name>webAppRootKey</param-name>
-		<param-value>webApp.root</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jConfigLocation</param-name>
-		<param-value>classpath:log4j.properties</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jRefreshInterval</param-name>
-		<param-value>6000</param-value>
-	</context-param>
-	<listener>
-		<listener-class>
-			org.springframework.web.util.Log4jConfigListener
-		</listener-class>
-	</listener>
+    <listener>
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener
+        </listener-class>
+    </listener>
 
-	<!-- config -->
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:spring-context*.xml</param-value>
-	</context-param>
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener
-		</listener-class>
-	</listener>
+    <!-- log4j -->
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>webApp.root</param-value>
+    </context-param>
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>classpath:log4j.properties</param-value>
+    </context-param>
+    <context-param>
+        <param-name>log4jRefreshInterval</param-name>
+        <param-value>6000</param-value>
+    </context-param>
+    <listener>
+        <listener-class>
+            org.springframework.web.util.Log4jConfigListener
+        </listener-class>
+    </listener>
 
-	<!-- encoding utf-8 -->
-	<filter>
-		<filter-name>encodingFilter</filter-name>
-		<filter-class>org.springframework.web.filter.CharacterEncodingFilter
-		</filter-class>
-		<async-supported>true</async-supported>
-		<init-param>
-			<param-name>encoding</param-name>
-			<param-value>UTF-8</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>encodingFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	
-	<!-- shiro 安全过滤器 -->
+    <!-- config -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring-context*.xml</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+
+    <!-- encoding utf-8 -->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter
+        </filter-class>
+        <async-supported>true</async-supported>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- shiro 安全过滤器 -->
     <!-- The filter-name matches name of a 'shiroFilter' bean inside applicationContext.xml -->
     <filter>
         <filter-name>shiroFilter</filter-name>
@@ -96,117 +98,117 @@
         <filter-name>shiroFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
-	<!-- spring mvc -->
-	<servlet>
-		<servlet-name>SpringMVC</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet
-		</servlet-class>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>classpath:spring-mvc*.xml</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-		<async-supported>true</async-supported>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SpringMVC</servlet-name>
-		<url-pattern>/</url-pattern>
-	</servlet-mapping>
 
-	<!-- ehcache 磁盘缓存 监控，持久化恢复 -->  
-	<listener>  
-	    <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>  
-	</listener>
+    <!-- spring mvc -->
+    <servlet>
+        <servlet-name>SpringMVC</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring-mvc*.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SpringMVC</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
 
-	<!-- 配置Druid内置监控功能 -->
-	<servlet>
-		<servlet-name>DruidStatView </servlet-name>
-		<servlet-class>com.alibaba.druid.support.http.StatViewServlet
-		</servlet-class>
-		<async-supported>true</async-supported>
-		<init-param>
-			<!-- 允许访问的地址列表配置，其他地址不允许访问 -->
-			<param-name>allow</param-name>
-			<param-value>127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16</param-value>
-		</init-param>
-		<!-- <init-param>
-			用户名  
-	    	<param-name>loginUsername</param-name>  
-	    	<param-value>druid</param-value>  
-	    </init-param>  
-	    <init-param>  
-	    	密码  
-	    	<param-name>loginPassword</param-name>  
-	    	<param-value>123456</param-value>  
-	    </init-param> -->
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DruidStatView </servlet-name>
-		<url-pattern>/druid/*</url-pattern>
-	</servlet-mapping>
+    <!-- ehcache 磁盘缓存 监控，持久化恢复 -->
+    <listener>
+        <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
+    </listener>
 
-	<!-- Druid过滤器 -->
-	<filter>
-		<filter-name>DruidWebStatFilter </filter-name>
-		<filter-class>com.alibaba.druid.support.http.WebStatFilter
-		</filter-class>
-		<async-supported>true</async-supported>
-		<init-param>
-			<!-- 过滤不需要统计的url -->
-			<param-name>exclusions</param-name>
-			<param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/druid
-			</param-value>
-		</init-param>
-		<init-param>
-			<!-- 是否开启session统计功能 -->
-			<param-name>sessionStatEnable</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<init-param>
-			<!-- 最大session统计数量 -->
-			<param-name>sessionStatMaxCount</param-name>
-			<param-value>1000</param-value>
-		</init-param>
-		<init-param>
-			<!-- 在session中获取用户名。 注意：如果你session中保存的是非string类型的对象，需要重载toString方法 -->
-			<param-name>principalSessionName</param-name>
-			<param-value>org.apache.shiro.subject.support.DefaultSubjectContext_PRINCIPALS_SESSION_KEY</param-value>
-		</init-param>
-		<!-- <init-param>
-			在cookie中获取用户名
-			<param-name>principalCookieName</param-name>
-			<param-value>xxx.user</param-value>
-		</init-param> -->
-		<init-param>
-			<!-- 配置profileEnable能够监控单个url调用的sql列表 -->
-			<param-name>profileEnable</param-name>
-			<param-value>true</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>DruidWebStatFilter </filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+    <!-- 配置Druid内置监控功能 -->
+    <servlet>
+        <servlet-name>DruidStatView</servlet-name>
+        <servlet-class>com.alibaba.druid.support.http.StatViewServlet
+        </servlet-class>
+        <async-supported>true</async-supported>
+        <init-param>
+            <!-- 允许访问的地址列表配置，其他地址不允许访问 -->
+            <param-name>allow</param-name>
+            <param-value>127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16</param-value>
+        </init-param>
+        <!-- <init-param>
+            用户名
+            <param-name>loginUsername</param-name>
+            <param-value>druid</param-value>
+        </init-param>
+        <init-param>
+            密码
+            <param-name>loginPassword</param-name>
+            <param-value>123456</param-value>
+        </init-param> -->
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DruidStatView</servlet-name>
+        <url-pattern>/druid/*</url-pattern>
+    </servlet-mapping>
 
-	<!-- ehcache缓存web页面:缓存/css/*, /html/*, /js/*, /lib/*下的所有文件 -->
-	<!-- <filter> <filter-name>PageEhcacheFilter</filter-name> <filter-class>com.dph.filter.PageEhcacheFilter</filter-class> 
-		<init-param> <param-name>cacheName</param-name> <param-value>SimplePageCachingFilter</param-value> 
-		</init-param> </filter> <filter-mapping> <filter-name>PageEhcacheFilter</filter-name> 
-		<url-pattern>/css/*</url-pattern> </filter-mapping> <filter-mapping> <filter-name>PageEhcacheFilter</filter-name> 
-		<url-pattern>/html/*</url-pattern> </filter-mapping> <filter-mapping> <filter-name>PageEhcacheFilter</filter-name> 
-		<url-pattern>/js/*</url-pattern> </filter-mapping> <filter-mapping> <filter-name>PageEhcacheFilter</filter-name> 
-		<url-pattern>/lib/*</url-pattern> </filter-mapping> -->
+    <!-- Druid过滤器 -->
+    <filter>
+        <filter-name>DruidWebStatFilter</filter-name>
+        <filter-class>com.alibaba.druid.support.http.WebStatFilter
+        </filter-class>
+        <async-supported>true</async-supported>
+        <init-param>
+            <!-- 过滤不需要统计的url -->
+            <param-name>exclusions</param-name>
+            <param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*,/druid
+            </param-value>
+        </init-param>
+        <init-param>
+            <!-- 是否开启session统计功能 -->
+            <param-name>sessionStatEnable</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <!-- 最大session统计数量 -->
+            <param-name>sessionStatMaxCount</param-name>
+            <param-value>1000</param-value>
+        </init-param>
+        <init-param>
+            <!-- 在session中获取用户名。 注意：如果你session中保存的是非string类型的对象，需要重载toString方法 -->
+            <param-name>principalSessionName</param-name>
+            <param-value>org.apache.shiro.subject.support.DefaultSubjectContext_PRINCIPALS_SESSION_KEY</param-value>
+        </init-param>
+        <!-- <init-param>
+            在cookie中获取用户名
+            <param-name>principalCookieName</param-name>
+            <param-value>xxx.user</param-value>
+        </init-param> -->
+        <init-param>
+            <!-- 配置profileEnable能够监控单个url调用的sql列表 -->
+            <param-name>profileEnable</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>DruidWebStatFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-	<!-- sitemesh装饰器 -->
-	<filter>
-		<filter-name>sitemesh</filter-name>
-		<filter-class>com.opensymphony.module.sitemesh.filter.PageFilter
-		</filter-class>
-		<async-supported>true</async-supported>
-	</filter>
-	<filter-mapping>
-		<filter-name>sitemesh</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+    <!-- ehcache缓存web页面:缓存/css/*, /html/*, /js/*, /lib/*下的所有文件 -->
+    <!-- <filter> <filter-name>PageEhcacheFilter</filter-name> <filter-class>com.dph.filter.PageEhcacheFilter</filter-class>
+        <init-param> <param-name>cacheName</param-name> <param-value>SimplePageCachingFilter</param-value>
+        </init-param> </filter> <filter-mapping> <filter-name>PageEhcacheFilter</filter-name>
+        <url-pattern>/css/*</url-pattern> </filter-mapping> <filter-mapping> <filter-name>PageEhcacheFilter</filter-name>
+        <url-pattern>/html/*</url-pattern> </filter-mapping> <filter-mapping> <filter-name>PageEhcacheFilter</filter-name>
+        <url-pattern>/js/*</url-pattern> </filter-mapping> <filter-mapping> <filter-name>PageEhcacheFilter</filter-name>
+        <url-pattern>/lib/*</url-pattern> </filter-mapping> -->
+
+    <!-- sitemesh装饰器 -->
+    <filter>
+        <filter-name>sitemesh</filter-name>
+        <filter-class>com.opensymphony.module.sitemesh.filter.PageFilter
+        </filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>sitemesh</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 </web-app>
