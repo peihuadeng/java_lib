@@ -10,7 +10,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * calculate how long to process request.
- * 
+ *
  * @author root
  *
  */
@@ -36,6 +36,7 @@ public class TimeInterceptor extends HandlerInterceptorAdapter {
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 		long endTime = System.currentTimeMillis();
 		long startTime = startTimeThreadLocal.get();
+		startTimeThreadLocal.remove();//清除
 		long consumeTime = endTime - startTime;
 		logger.info(String.format("'%s' consume %dms", request.getRequestURI(), consumeTime));
 
